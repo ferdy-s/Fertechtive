@@ -236,7 +236,7 @@ import { ArticleJsonLd } from "next-seo";
 
 ## 13. Kontributor
 
-Seluruh proses desain, pengembangan, dan implementasi sistem Fertechive — meliputi UI UX Design, Front-End Development, Back-End Programming, Database Architecture, SEO Implementation, CMS Engineering, serta Deployment — dikerjakan secara penuh oleh:
+Seluruh proses desain, pengembangan, dan implementasi sistem Fertechive — meliputi UI UX Design, Front-End Development, Back-End Programming, Database Architecture, SEO Implementation, CMS Engineering, serta Deployment dikerjakan secara penuh oleh:
 
 **Ferdy Salsabilla**
 Full Stack Developer dan System Architect
