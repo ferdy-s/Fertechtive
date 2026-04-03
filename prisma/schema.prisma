@@ -8,62 +8,52 @@ datasource db {
 }
 
 model Project {
-  id           String   @id @default(cuid())
-  title        String
-  slug         String   @unique
-  description  String
-  content      String?
-  tags         String[] @default([])
-  images       String[] @default([])
-  thumbnailUrl String?
-  category     String?
-  published    Boolean  @default(false)
-
-  // ==== SEO fields ====
-  metaTitle       String?
-  metaDescription String?
-  metaKeywords    String[] @default([])
+  id              String    @id @default(cuid())
+  title           String
+  slug            String    @unique
+  description     String
+  content         String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  category        String?
+  thumbnailUrl    String?
+  published       Boolean   @default(false)
+  tags            String[]  @default([])
+  images          String[]  @default([])
   canonicalUrl    String?
+  metaDescription String?
+  metaKeywords    String[]  @default([])
+  metaTitle       String?
   ogImage         String?
   publishedAt     DateTime?
-
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
 
   @@index([published, updatedAt])
   @@index([slug])
 }
 
-// --- Post & Category ---
 model Post {
-  id      String  @id @default(cuid())
-  title   String
-  slug    String  @unique
-  excerpt String? @db.Text
-  content String  @db.Text
-
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId String
-
-  // ⬇⬇⬇ Tambahan supaya cocok dengan actions.ts & page.tsx
+  id              String     @id @default(cuid())
+  title           String
+  slug            String     @unique
+  excerpt         String?
+  content         String
+  authorId        String
+  tags            String[]
+  publishedAt     DateTime?
+  createdAt       DateTime   @default(now())
   coverUrl        String?
-  metaTitle       String?
   metaDescription String?
-  metaKeywords    String[] // Postgres array of text
-  tags            String[] @db.Text // (opsional: boleh dibiarkan seperti ini kalau sudah existing)
-
-  publishedAt DateTime?
-  createdAt   DateTime  @default(now())
-
-  // Relasi kategori (implicit many-to-many)
-  categories Category[]
+  metaKeywords    String[]
+  metaTitle       String?
+  author          User       @relation(fields: [authorId], references: [id])
+  categories      Category[] @relation("CategoryToPost")
 }
 
 model Category {
   id    String @id @default(cuid())
   slug  String @unique
   name  String
-  posts Post[] // lawan dari Post.categories
+  posts Post[] @relation("CategoryToPost")
 }
 
 model User {
@@ -72,13 +62,8 @@ model User {
   email     String   @unique
   password  String
   role      Role     @default(USER)
-  posts     Post[]
   createdAt DateTime @default(now())
-}
-
-enum Role {
-  USER
-  ADMIN
+  posts     Post[]
 }
 
 model CvRequest {
@@ -105,4 +90,9 @@ model SiteSetting {
   i18n         Json?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
 }

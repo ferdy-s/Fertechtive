@@ -1,14 +1,32 @@
-import type { MetadataRoute } from "next";
+import { ImageResponse } from "next/og";
+import { NextRequest } from "next/server";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://domainmu.com";
+export const runtime = "edge";
 
-export default function robots(): MetadataRoute.Robots {
-  return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      // tambahkan disallow jika perlu
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string }> },
+) {
+  const { slug } = await context.params;
+
+  return new ImageResponse(
+    <div
+      style={{
+        fontSize: 64,
+        background: "black",
+        color: "white",
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {slug}
+    </div>,
+    {
+      width: 1200,
+      height: 630,
     },
-    sitemap: `${SITE_URL}/sitemap.xml`,
-  };
+  );
 }

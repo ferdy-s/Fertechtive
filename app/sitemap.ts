@@ -1,27 +1,33 @@
 import { prisma } from "@/lib/prisma";
 import type { MetadataRoute } from "next";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://domainmu.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://fertechtive.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  /* ================= PROJECTS ================= */
   const projects = await prisma.project.findMany({
     where: { publishedAt: { not: null } },
-    select: { slug: true, updatedAt: true },
+    select: {
+      slug: true,
+      updatedAt: true,
+      publishedAt: true,
+    },
   });
 
-  const projectEntries = projects.map((p) => ({
+  const projectEntries: MetadataRoute.Sitemap = projects.map((p) => ({
     url: `${SITE_URL}/portfolio/${p.slug}`,
-    lastModified: p.updatedAt,
-    changeFrequency: "weekly" as const,
+    lastModified: p.updatedAt ?? p.publishedAt ?? new Date(),
+    changeFrequency: "weekly",
     priority: 0.9,
   }));
 
-  return [
+  /* ================= STATIC PAGES ================= */
+  const staticEntries: MetadataRoute.Sitemap = [
     {
       url: SITE_URL,
       lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 1,
+      priority: 1.0,
     },
     {
       url: `${SITE_URL}/portfolio`,
@@ -29,6 +35,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.8,
     },
-    ...projectEntries,
+    {
+      url: `${SITE_URL}/blog`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
   ];
+
+  return [...staticEntries, ...projectEntries];
 }

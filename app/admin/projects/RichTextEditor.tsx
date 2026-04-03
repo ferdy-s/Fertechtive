@@ -7,7 +7,6 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
-// (AutoLinkPlugin sengaja tidak dipakai untuk hindari mismatch tipe antar versi)
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
@@ -16,36 +15,62 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 
 import {
   $createParagraphNode,
+  $getRoot,
   $getSelection,
   $isRangeSelection,
   FORMAT_TEXT_COMMAND,
   LexicalEditor,
-  $getRoot,
 } from "lexical";
+
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import {
-  ListItemNode,
   ListNode,
-  INSERT_UNORDERED_LIST_COMMAND,
+  ListItemNode,
   INSERT_ORDERED_LIST_COMMAND,
+  INSERT_UNORDERED_LIST_COMMAND,
 } from "@lexical/list";
 import { CodeNode } from "@lexical/code";
 import { LinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
-import { $generateNodesFromDOM, $generateHtmlFromNodes } from "@lexical/html";
+import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
 import { $setBlocksType } from "@lexical/selection";
 
+/* =======================================================
+   Upload helper
+   ======================================================= */
+async function uploadImage(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    throw new Error("Upload gagal");
+  }
+
+  const data = await res.json();
+  return data.url as string;
+}
+
+/* =======================================================
+   Placeholder
+   ======================================================= */
 function Placeholder() {
   return (
     <div className="pointer-events-none select-none text-white/40">
-      Tulis kontenmu di sini… (Markdown aktif)
+      Tulis konten di sini…
     </div>
   );
 }
 
-/* ---------- Toolbar ---------- */
+/* =======================================================
+   Toolbar
+   ======================================================= */
 function Toolbar({ editor }: { editor: LexicalEditor }) {
   const promptLink = () => {
-    const href = prompt("Masukkan URL (bisa internal: /portfolio/slug)");
+    const href = prompt("Masukkan URL");
     if (href === null) return;
     editor.dispatchCommand(TOGGLE_LINK_COMMAND, href || null);
   };
@@ -53,15 +78,41 @@ function Toolbar({ editor }: { editor: LexicalEditor }) {
   const setHeading = (tag: "paragraph" | "h1" | "h2" | "h3") => {
     editor.update(() => {
       const selection = $getSelection();
-      if ($isRangeSelection(selection)) {
-        if (tag === "paragraph") {
-          const p = $createParagraphNode();
-          selection.getNodes().forEach((n) => n.replace(p));
-        } else {
-          $setBlocksType(selection, () => new HeadingNode(tag));
-        }
+      if (!$isRangeSelection(selection)) return;
+
+      if (tag === "paragraph") {
+        const p = $createParagraphNode();
+        selection.getNodes().forEach((node) => node.replace(p));
+      } else {
+        $setBlocksType(selection, () => new HeadingNode(tag));
       }
     });
+  };
+
+  const insertImage = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) return;
+
+      const previewUrl = URL.createObjectURL(file);
+
+      editor.update(() => {
+        const dom = new DOMParser().parseFromString(
+          `<p><img src="${previewUrl}" alt="" data-preview="true" /></p>`,
+          "text/html",
+        );
+
+        const nodes = $generateNodesFromDOM(editor, dom);
+        const root = $getRoot();
+        nodes.forEach((n) => root.append(n));
+      });
+    };
+
+    input.click();
   };
 
   return (
@@ -73,13 +124,15 @@ function Toolbar({ editor }: { editor: LexicalEditor }) {
       >
         B
       </button>
+
       <button
         type="button"
         className="px-2 py-1 rounded hover:bg-white/10"
         onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")}
       >
-        <em>I</em>
+        I
       </button>
+
       <button
         type="button"
         className="px-2 py-1 rounded hover:bg-white/10"
@@ -87,6 +140,7 @@ function Toolbar({ editor }: { editor: LexicalEditor }) {
       >
         Code
       </button>
+
       <button
         type="button"
         className="px-2 py-1 rounded hover:bg-white/10"
@@ -97,12 +151,12 @@ function Toolbar({ editor }: { editor: LexicalEditor }) {
 
       <div className="mx-1 w-px bg-white/15" />
 
-      {["paragraph", "h1", "h2", "h3"].map((tag) => (
+      {(["paragraph", "h1", "h2", "h3"] as const).map((tag) => (
         <button
           key={tag}
           type="button"
           className="px-2 py-1 rounded hover:bg-white/10"
-          onClick={() => setHeading(tag as any)}
+          onClick={() => setHeading(tag)}
         >
           {tag === "paragraph" ? "P" : tag.toUpperCase()}
         </button>
@@ -119,6 +173,7 @@ function Toolbar({ editor }: { editor: LexicalEditor }) {
       >
         • List
       </button>
+
       <button
         type="button"
         className="px-2 py-1 rounded hover:bg-white/10"
@@ -128,6 +183,7 @@ function Toolbar({ editor }: { editor: LexicalEditor }) {
       >
         1. List
       </button>
+
       <button
         type="button"
         className="px-2 py-1 rounded hover:bg-white/10"
@@ -142,21 +198,31 @@ function Toolbar({ editor }: { editor: LexicalEditor }) {
       >
         Quote
       </button>
+
+      <div className="mx-1 w-px bg-white/15" />
+
+      <button
+        type="button"
+        className="px-2 py-1 rounded hover:bg-white/10"
+        onClick={insertImage}
+      >
+        Image
+      </button>
     </div>
   );
 }
 
-/* ---------- Main component ---------- */
+/* =======================================================
+   Main Component
+   ======================================================= */
 export default function RichTextEditor({
   name,
   label = "Content",
   initialHTML = "",
-  rows = 10,
 }: {
   name: string;
   label?: string;
   initialHTML?: string;
-  rows?: number;
 }) {
   const id = useId();
   const hiddenRef = useRef<HTMLTextAreaElement | null>(null);
@@ -176,102 +242,70 @@ export default function RichTextEditor({
         h3: "text-lg font-semibold mt-3 mb-2",
       },
       code: "rounded bg-white/10 px-1 py-0.5 font-mono",
-      codeHighlight: {}, // harus object
       list: {
-        ul: "list-disc ml-6 space-y-1",
-        ol: "list-decimal ml-6 space-y-1",
-        listitem: "my-0.5",
+        ul: "list-disc ml-6",
+        ol: "list-decimal ml-6",
+        listitem: "my-1",
       },
-      link: "underline decoration-dotted underline-offset-4",
+      link: "underline underline-offset-4",
     },
     nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, CodeNode, LinkNode],
-  } as const;
+  };
 
   const handleChange = (editorState: any, editor: LexicalEditor) => {
     editorState.read(() => {
-      const html = $generateHtmlFromNodes(editor, null);
-      if (hiddenRef.current) hiddenRef.current.value = html;
+      const html = $generateHtmlFromNodes(editor);
+      if (hiddenRef.current) {
+        hiddenRef.current.value = html;
+      }
     });
   };
 
   return (
     <div className="grid gap-2 text-sm">
-      <label className="opacity-85">{label}</label>
+      <label>{label}</label>
 
       <LexicalComposer initialConfig={initialConfig}>
         <EditorShell
           id={id}
           initialHTML={initialHTML}
           hiddenRef={hiddenRef}
-          rows={rows}
           onChange={handleChange}
         />
       </LexicalComposer>
 
-      <textarea name={name} ref={hiddenRef} className="hidden" rows={rows} />
-      <p className="text-xs opacity-60">
-        Catatan: paste gambar belum otomatis disimpan. Unggah via bagian Images.
-      </p>
+      <textarea name={name} ref={hiddenRef} className="hidden" />
     </div>
   );
 }
 
-/* ---------- Shell (harus pakai static import hook context) ---------- */
+/* =======================================================
+   Editor Shell
+   ======================================================= */
 function EditorShell({
   id,
   initialHTML,
   hiddenRef,
-  rows,
   onChange,
 }: {
   id: string;
   initialHTML: string;
   hiddenRef: React.RefObject<HTMLTextAreaElement | null>;
-  rows: number;
   onChange: (editorState: any, editor: LexicalEditor) => void;
 }) {
   const [editor] = useLexicalComposerContext();
 
-  // Seed hidden textarea
-  useEffect(() => {
-    if (hiddenRef.current) hiddenRef.current.value = initialHTML || "";
-  }, [initialHTML, hiddenRef]);
-
-  // Inject initial HTML
   useEffect(() => {
     if (!initialHTML) return;
+
     editor.update(() => {
-      const parser = new DOMParser();
-      const dom = parser.parseFromString(initialHTML, "text/html");
+      const dom = new DOMParser().parseFromString(initialHTML, "text/html");
       const nodes = $generateNodesFromDOM(editor, dom);
-      const rootNode = $getRoot();
-      rootNode.clear();
-      nodes.forEach((n: any) => rootNode.append(n));
+      const root = $getRoot();
+      root.clear();
+      nodes.forEach((node) => root.append(node));
     });
   }, [editor, initialHTML]);
-
-  // Optional: aktifkan syntax highlight kalau modul & types tersedia
-  useEffect(() => {
-    let cleanup: (() => void) | undefined;
-    (async () => {
-      try {
-        const mod = await import("@lexical/code");
-        if (typeof (mod as any).registerCodeHighlighting === "function") {
-          cleanup = (mod as any).registerCodeHighlighting(editor);
-        }
-      } catch {
-        /* noop */
-      }
-      try {
-        await import("prismjs");
-      } catch {
-        /* noop */
-      }
-    })();
-    return () => {
-      if (cleanup) cleanup();
-    };
-  }, [editor]);
 
   return (
     <div className="grid gap-2">
@@ -282,21 +316,20 @@ function EditorShell({
           contentEditable={
             <ContentEditable
               id={id}
-              className="min-h-[calc(1.5rem*10)] prose prose-invert max-w-none outline-none px-3 py-2"
-              style={{ whiteSpace: "pre-wrap" }}
+              className="min-h-[12rem] px-3 py-2 outline-none prose prose-invert max-w-none"
             />
           }
           placeholder={<Placeholder />}
           ErrorBoundary={() => (
-            <div className="p-2 text-red-400 text-xs">
-              Terjadi kesalahan pada editor.
+            <div className="p-2 text-xs text-red-400">
+              Terjadi kesalahan editor
             </div>
           )}
         />
+
         <HistoryPlugin />
         <ListPlugin />
         <LinkPlugin />
-        {/* AutoLinkPlugin & CodeHighlightPlugin ditiadakan untuk kompatibilitas */}
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
         <AutoFocusPlugin />
         <OnChangePlugin onChange={onChange} />

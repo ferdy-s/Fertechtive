@@ -41,8 +41,8 @@ export default function HomePage() {
             transition={{ duration: 0.7, delay: 0.15 }}
             className="mx-auto mt-2 max-w-2xl text-[15px] md:text-[15px] text-white/75 leading-relaxed"
           >
-            <strong>Fertechtive</strong> adalah website personal branding dari
-            Ferdy Salsabilla, dibangun untuk berbagi{" "}
+            <strong>Fertechtive</strong> adalah website portfolio dari Ferdy
+            Salsabilla, dibangun untuk berbagi{" "}
             <span className="text-cyan-300">gagasan</span>,{" "}
             <span className="text-violet-300">karya</span>, dan eksplorasi
             digital yang semoga dapat memberi manfaat bagi publik.

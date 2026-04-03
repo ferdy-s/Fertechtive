@@ -73,7 +73,13 @@ export default function Editor({
   function insertLink() {
     const url = prompt("Masukkan URL");
     if (!url) return;
-    wrap(`a href="${escapeHtml(url)}" target="_blank" rel="nofollow noopener"`);
+
+    const safeUrl = escapeHtml(url);
+    const text = getSelectionHtml() || safeUrl;
+
+    insertHtml(
+      `<a href="${safeUrl}" target="_blank" rel="nofollow noopener">${text}</a>`,
+    );
   }
   async function insertImage() {
     if (!uploadAction) return alert("Upload tidak tersedia di lingkungan ini.");
@@ -86,7 +92,7 @@ export default function Editor({
       fd.set("file", input.files[0]);
       const { url } = await uploadAction(fd);
       insertHtml(
-        `<figure><img src="${url}" alt="" /><figcaption></figcaption></figure>`
+        `<figure><img src="${url}" alt="" /><figcaption></figcaption></figure>`,
       );
     };
     input.click();
@@ -111,7 +117,7 @@ export default function Editor({
 
   /* ===================== PASTE INTERCEPT ===================== */
   function onBeforeInput(
-    e: React.FormEvent<HTMLDivElement> & { nativeEvent: InputEvent }
+    e: React.FormEvent<HTMLDivElement> & { nativeEvent: InputEvent },
   ) {
     const ne = e.nativeEvent;
     if (ne.inputType !== "insertFromPaste") return;
@@ -126,7 +132,7 @@ export default function Editor({
     e.preventDefault();
     handlePastePayload(
       e.clipboardData.getData("text/html"),
-      e.clipboardData.getData("text/plain")
+      e.clipboardData.getData("text/plain"),
     );
   }
 
@@ -247,6 +253,7 @@ export default function Editor({
           font-weight: 700;
           margin: 1rem 0 0.5rem;
         }
+
         .prose h3 {
           font-size: 14px;
           line-height: 1.35;
@@ -342,7 +349,7 @@ function escapeHtml(s: string) {
     (m) =>
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
         m as "&" | "<" | ">" | '"' | "'"
-      ]!
+      ]!,
   );
 }
 
@@ -354,7 +361,7 @@ function transformFencedCode(html: string): string {
     /```(\w+)?\s*([\s\S]*?)```/g,
     (_, lang = "text", body) => {
       return `<pre><code data-lang="${lang}">${escapeHtml(body)}</code></pre>`;
-    }
+    },
   );
 }
 
@@ -516,12 +523,12 @@ function normalizePastedHTML(raw: string): string {
 /* ===== Word list converter with nesting — SAFE INSERT ===== */
 function convertMsoListsWithNesting(
   root: HTMLElement,
-  marginMap: WeakMap<HTMLElement, number>
+  marginMap: WeakMap<HTMLElement, number>,
 ) {
   const paras = Array.from(
     root.querySelectorAll<HTMLElement>(
-      "p.MsoListParagraph, p[class*='MsoList']"
-    )
+      "p.MsoListParagraph, p[class*='MsoList']",
+    ),
   );
   if (!paras.length) return;
 
@@ -567,7 +574,7 @@ function convertMsoListsWithNesting(
       while (stack.length && stack[stack.length - 1].level > level) stack.pop();
       if (!stack.length || stack[stack.length - 1].level < level) {
         const list = root.ownerDocument!.createElement(
-          type.startsWith("ol") ? "ol" : "ul"
+          type.startsWith("ol") ? "ol" : "ul",
         );
         if (type === "ol-a") list.setAttribute("type", "a");
         if (type === "ol-A") list.setAttribute("type", "A");
@@ -582,7 +589,7 @@ function convertMsoListsWithNesting(
       const li = root.ownerDocument!.createElement("li");
       li.textContent = txt.replace(
         /^\s*([0-9ivxa-zA-Z]+)[.)]\s+|^[•·\-–—]\s+/,
-        ""
+        "",
       );
       stack[stack.length - 1].list.appendChild(li);
       p.remove(); // aman karena parent & ref sudah disimpan
@@ -603,7 +610,7 @@ function convertMsoListsWithNesting(
 }
 
 function detectListMarkerType(
-  txt: string
+  txt: string,
 ): "ul" | "ol-decimal" | "ol-a" | "ol-A" | "ol-i" | "ol-I" {
   if (/^\d+[.)]/.test(txt)) return "ol-decimal";
   if (/^[a]\./.test(txt)) return "ol-a";
@@ -685,7 +692,7 @@ function wrapParagraphSequencesIntoListsWithIndent(root: HTMLElement) {
         stack[stack.length - 1].type !== kind
       ) {
         const list = root.ownerDocument!.createElement(
-          kind.startsWith("ol") ? "ol" : "ul"
+          kind.startsWith("ol") ? "ol" : "ul",
         );
         if (kind === "ol-a") list.setAttribute("type", "a");
         if (kind === "ol-A") list.setAttribute("type", "A");
@@ -840,11 +847,11 @@ function inlineMd(s: string): string {
   t = t.replace(/`([^`]+)`/g, (_m, g1) => `<code>${escapeHtml(g1)}</code>`);
   t = t.replace(
     /\*\*([^*]+)\*\*|__([^_]+)__/g,
-    (_m, g1, g2) => `<strong>${escapeHtml(g1 || g2)}</strong>`
+    (_m, g1, g2) => `<strong>${escapeHtml(g1 || g2)}</strong>`,
   );
   t = t.replace(
     /\*([^*]+)\*|_([^_]+)_/g,
-    (_m, g1, g2) => `<em>${escapeHtml(g1 || g2)}</em>`
+    (_m, g1, g2) => `<em>${escapeHtml(g1 || g2)}</em>`,
   );
   t = t.replace(/__u__([^_]+)__u__/g, (_m, g1) => `<u>${escapeHtml(g1)}</u>`);
   t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, text, url) => {
@@ -891,7 +898,7 @@ function jsHighlight(s: string) {
   s = s.replace(/\b(\d+)\b/g, `<span class="nu">$1</span>`);
   s = s.replace(
     /\b(const|let|var|function|return|if|else|for|while|new|class|extends|import|from|export|async|await|try|catch|throw|switch|case|break|continue)\b/g,
-    `<span class="kw">$1</span>`
+    `<span class="kw">$1</span>`,
   );
   s = s.replace(/\b([A-Za-z_]\w*)\s*(?=\()/g, `<span class="fn">$1</span>`);
   return s;
@@ -903,7 +910,7 @@ function pyHighlight(s: string) {
   s = s.replace(/\b(\d+)\b/g, `<span class="nu">$1</span>`);
   s = s.replace(
     /\b(def|class|return|if|elif|else|for|while|import|from|as|try|except|raise|with|yield|lambda|True|False|None|and|or|not|in|is)\b/g,
-    `<span class="kw">$1</span>`
+    `<span class="kw">$1</span>`,
   );
   s = s.replace(/\b([A-Za-z_]\w*)\s*(?=\()/g, `<span class="fn">$1</span>`);
   return s;
@@ -914,7 +921,7 @@ function htmlHighlight(s: string) {
   s = s.replace(/&lt;\/?([a-z0-9-]+)([^&]*?)&gt;/gi, (_m, tag, attrs) => {
     const a = attrs.replace(
       /([a-z-:]+)=("[^"]*"|'[^']*')/gi,
-      `<span class="at">$1</span>=<span class="st">$2</span>`
+      `<span class="at">$1</span>=<span class="st">$2</span>`,
     );
     return `&lt;<span class="tg">${tag}</span>${a}&gt;`;
   });
@@ -932,7 +939,7 @@ function sqlHighlight(s: string) {
   s = s.replace(/(--.*?$)/gm, `<span class="cm">$1</span>`);
   s = s.replace(
     /\b(SELECT|FROM|WHERE|INSERT|INTO|VALUES|UPDATE|SET|DELETE|JOIN|LEFT|RIGHT|ON|GROUP BY|ORDER BY|LIMIT|AND|OR|NOT|AS)\b/gi,
-    `<span class="kw">$1</span>`
+    `<span class="kw">$1</span>`,
   );
   s = s.replace(/('[^']*')/g, `<span class="st">$1</span>`);
   s = s.replace(/\b(\d+)\b/g, `<span class="nu">$1</span>`);

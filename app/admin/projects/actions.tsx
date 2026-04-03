@@ -186,7 +186,7 @@ export async function upsertProject(form: FormData) {
   const totalBytes = files.reduce((s, f) => s + (f?.size || 0), 0);
   if (totalBytes > MAX_TOTAL)
     throw new Error(
-      `Total ukuran gambar melebihi ${(MAX_TOTAL / (1024 * 1024)).toFixed(0)}MB. Kompres/kurangi file.`
+      `Total ukuran gambar melebihi ${(MAX_TOTAL / (1024 * 1024)).toFixed(0)}MB. Kompres/kurangi file.`,
     );
 
   // Validasi Zod

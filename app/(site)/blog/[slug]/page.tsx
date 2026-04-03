@@ -53,22 +53,43 @@ export async function generateMetadata({
     where: { slug: params.slug },
     include: { author: true, categories: true },
   });
+
   if (!post) return {};
 
   const origin = await getOrigin();
   const canonical = `${origin}/blog/${post.slug}`;
 
-  const base = makeMeta({
-    title: post.title,
-    desc: post.excerpt || "",
-    url: `/blog/${post.slug}`,
-  });
+  const image = post.coverUrl
+    ? post.coverUrl.startsWith("http")
+      ? post.coverUrl
+      : `${origin}${post.coverUrl}`
+    : `${origin}/default-blog.jpg`;
 
   return {
-    ...base,
+    title: post.title,
+    description: post.excerpt || "",
     alternates: { canonical },
-    openGraph: { ...(base as any).openGraph, url: canonical },
-    twitter: { ...(base as any).twitter },
+
+    openGraph: {
+      type: "article",
+      url: canonical,
+      title: post.title,
+      description: post.excerpt || "",
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt || "",
+      images: [image],
+    },
   };
 }
 
@@ -300,7 +321,7 @@ export default async function BlogDetailPage({
               "@type": "ListItem",
               position: 2,
               name: firstCategory.name,
-              item: `${origin}/blog?cat=${encodeURIComponent(firstCategory.name)}`,
+              item: `${origin}/blog/cat/${firstCategory.slug}`,
             },
           ]
         : []),
@@ -346,7 +367,7 @@ export default async function BlogDetailPage({
           {firstCategory ? (
             <>
               <Link
-                href={`/blog?cat=${encodeURIComponent(firstCategory.name)}`}
+                href={`/blog/cat/${firstCategory.slug}`}
                 className="hover:text-cyan-400 transition"
               >
                 {firstCategory.name}
@@ -431,7 +452,7 @@ export default async function BlogDetailPage({
               {post.categories.map((cat) => (
                 <Link
                   key={cat.id}
-                  href={`/blog?cat=${encodeURIComponent(cat.name)}`}
+                  href={`/blog/cat/${cat.slug}`}
                   className="px-3 py-1 rounded-full border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] text-xs sm:text-sm text-white/80 transition"
                 >
                   #{cat.name}

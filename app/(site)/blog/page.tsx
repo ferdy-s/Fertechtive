@@ -1,12 +1,13 @@
 // app/blog/page.tsx
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import type { Category } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import BlogListClient from "./BlogListClient";
 import type { Metadata } from "next";
 
 /* ================= Types & Utils ================= */
-type Cat = { id: string; name: string; slug?: string | null };
 type Published = Date | string | null;
 type Post = {
   id: string;
@@ -17,7 +18,7 @@ type Post = {
   thumbnailUrl?: string | null;
   publishedAt: Published;
   author?: { name?: string | null } | null;
-  categories?: Cat[];
+  categories?: Category[]; // ✅ FIX
 };
 
 const coverOf = (p: Post) => p.coverUrl || p.thumbnailUrl || "";
@@ -38,91 +39,141 @@ const fmtDate = (d?: Published) => {
 
 /* ================= Caching ================= */
 export const revalidate = 3600; // ISR 1 jam
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 /* ================= SEO Metadata =================
    Pastikan process.env.NEXT_PUBLIC_SITE_URL terisi
 */
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://example.com";
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "https://l6qsd05x-3000.asse.devtunnels.ms";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+
   title: "Tips & Trik",
+
   description:
-    "Editorial futuristik tentang UI/UX, engineering, dan produktivitas kreator.",
-  alternates: { canonical: "/blog" },
+    "Kumpulan tips dan trik seputar Web Development, UI/UX Design, software engineering, serta produktivitas kreator digital yang dirancang untuk meningkatkan kualitas produk dan performa aplikasi modern.",
+
+  keywords: [
+    "Tips Web Development",
+    "UI UX Tips",
+    "Software Engineering",
+    "Frontend Development",
+    "Produktivitas Developer",
+    "Digital Engineering Insight",
+  ],
+
+  alternates: {
+    canonical: `${SITE_URL}/blog`,
+  },
+
   openGraph: {
     type: "website",
+    locale: "id_ID",
     url: `${SITE_URL}/blog`,
-    title: "Tips & Trik",
+    siteName: "Fertechtive",
+    title: "Berbagi Tips & Trik Digitalisasi Modern",
     description:
-      "Editorial futuristik tentang UI/UX, engineering, dan produktivitas kreator.",
-    images: [{ url: `${SITE_URL}/og/blog.jpg` }],
+      "Insight dan editorial seputar Web Development, UI/UX, dan engineering modern untuk developer dan kreator digital.",
+    images: [
+      {
+        url: `${SITE_URL}/tips-trik.png`,
+        width: 1200,
+        height: 630,
+        alt: "Tips & Trik - Web Development dan UI/UX Insight",
+      },
+    ],
   },
+
   twitter: {
     card: "summary_large_image",
-    title: "Tips & Trik",
+    title: "Berbagi Tips & Trik Digitalisasi Modern",
     description:
-      "Editorial futuristik tentang UI/UX, engineering, dan produktivitas kreator.",
-    images: [`${SITE_URL}/og/blog.jpg`],
+      "Insight dan strategi Web Development serta UI/UX untuk membangun produk digital modern.",
+    images: [`${SITE_URL}/tips-trik.png`],
   },
+
   robots: {
     index: true,
     follow: true,
-    "max-image-preview": "large",
-    "max-video-preview": -1,
-    "max-snippet": -1,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+      "max-snippet": -1,
+    },
   },
 };
-
-/* ================= Page ================= */
 export default async function Page({
   searchParams,
 }: {
-  searchParams: { q?: string; cat?: string };
+  searchParams: { q?: string; cat?: string; page?: string };
 }) {
+  /* ================= SEARCH PARAMS ================= */
   const q = (searchParams.q ?? "").trim();
   const cat = (searchParams.cat ?? "all").toLowerCase();
+  const currentPage = Math.max(parseInt(searchParams.page ?? "1"), 1);
 
-  // Filter di database (cepat & ramah crawler)
-  const where: any = {
-    AND: [
-      q
-        ? {
-            OR: [
-              { title: { contains: q, mode: "insensitive" } },
-              { excerpt: { contains: q, mode: "insensitive" } },
-            ],
-          }
-        : {},
-      cat !== "all"
-        ? {
-            categories: {
-              some: {
-                OR: [
-                  { slug: cat },
-                  { name: { equals: searchParams.cat, mode: "insensitive" } },
-                ],
-              },
-            },
-          }
-        : {},
-      { publishedAt: { not: null } },
-    ],
+  /* ================= PAGINATION ================= */
+  const POSTS_PER_PAGE = 5;
+  const skip = (currentPage - 1) * POSTS_PER_PAGE;
+
+  const buildUrl = (page: number) => {
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (cat !== "all") params.set("cat", cat);
+    if (page > 1) params.set("page", page.toString());
+    return `/blog${params.toString() ? `?${params.toString()}` : ""}`;
   };
 
-  const [posts, categories] = await Promise.all([
+  /* ================= WHERE FILTER ================= */
+  const where: Prisma.PostWhereInput = {
+    publishedAt: { not: null },
+  };
+
+  if (q) {
+    where.OR = [
+      {
+        title: { contains: q, mode: Prisma.QueryMode.insensitive },
+      },
+      {
+        excerpt: { contains: q, mode: Prisma.QueryMode.insensitive },
+      },
+    ];
+  }
+
+  if (cat !== "all") {
+    where.categories = {
+      some: { slug: cat },
+    };
+  }
+
+  /* ================= DATABASE QUERY ================= */
+  const [posts, totalCount, categories] = await Promise.all([
     prisma.post.findMany({
       where,
       include: { author: true, categories: true },
       orderBy: { publishedAt: "desc" },
-      take: 40,
+      skip,
+      take: POSTS_PER_PAGE,
     }),
-    prisma.category.findMany({ orderBy: { name: "asc" } }),
+    prisma.post.count({ where }),
+    prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+      },
+      orderBy: { name: "asc" },
+    }),
   ]);
 
-  // Casting aman ke tipe lokal kita (publishedAt bisa Date|string|null)
+  const totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
+
+  /* ================= DATA PREP ================= */
   const typedPosts = posts as unknown as Post[];
   const [featured, ...rest] = typedPosts;
 
@@ -148,7 +199,7 @@ export default async function Page({
         />
       </div>
 
-      <section className="mx-auto max-w-[1520px] px-5 sm:px-6 md:px-10 lg:px-16 pt-36 md:pt-40 pb-36">
+      <section className="mx-auto max-w-[1520px] px-5 sm:px-6 md:px-10 lg:px-16 pt-36 md:pt-40 pb-10">
         <header className="mb-8 md:mb-10">
           <h1 className="text-[40px] sm:text-[48px] md:text-[64px] xl:text-[76px] font-black tracking-tight leading-[1.04]">
             TIPS &amp; TRIK
@@ -158,7 +209,6 @@ export default async function Page({
             kreator.
           </p>
         </header>
-
         {/* HERO server-rendered (tanpa hidrasi) */}
         {featured && (
           <article
@@ -217,13 +267,11 @@ export default async function Page({
             </Link>
           </article>
         )}
-
         {/* Island ringan: search + kategori via URL query */}
         <BlogListClient
-          categories={categories as unknown as Cat[]}
+          categories={categories as Pick<Category, "id" | "name" | "slug">[]}
           total={typedPosts.length}
         />
-
         {/* LIST server-rendered (0 JS) */}
         <section id="blog-list" aria-label="Daftar artikel">
           {rest.length > 0 ? (
@@ -295,7 +343,65 @@ export default async function Page({
             </p>
           )}
         </section>
+        <main
+          className="relative isolate bg-[#05060A] text-white overflow-hidden"
+          aria-label="Halaman Blog"
+        >
+          {/* === SEMUA STRUCTURE LAMA TETAP SAMA === */}
 
+          {/* HERO + LIST TIDAK DIUBAH */}
+
+          {/* ================= PAGINATION ================= */}
+          {totalPages > 1 && (
+            <nav className="mt-15 flex justify-center" aria-label="Pagination">
+              <div className="flex items-center gap-6 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl px-6 py-3">
+                {/* Previous */}
+                <Link
+                  href={buildUrl(currentPage - 1)}
+                  aria-disabled={currentPage === 1}
+                  className={`text-sm font-medium transition-all duration-200
+          ${
+            currentPage === 1
+              ? "opacity-30 pointer-events-none"
+              : "text-white/70 hover:text-cyan-300"
+          }`}
+                >
+                  ← Previous
+                </Link>
+
+                {/* Divider */}
+                <div className="h-5 w-px bg-white/10" />
+
+                {/* Page Info */}
+                <div className="text-sm text-white/60">
+                  Page{" "}
+                  <span className="font-semibold text-white">
+                    {currentPage}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-semibold text-white">{totalPages}</span>
+                </div>
+
+                {/* Divider */}
+                <div className="h-5 w-px bg-white/10" />
+
+                {/* Next */}
+                <Link
+                  href={buildUrl(currentPage + 1)}
+                  aria-disabled={currentPage === totalPages}
+                  className={`text-sm font-medium transition-all duration-200
+          ${
+            currentPage === totalPages
+              ? "opacity-30 pointer-events-none"
+              : "text-white/70 hover:text-cyan-300"
+          }`}
+                >
+                  Next →
+                </Link>
+              </div>
+            </nav>
+          )}
+        </main>
         {/* JSON-LD (Blog + items) */}
         <script
           type="application/ld+json"

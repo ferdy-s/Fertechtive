@@ -16,10 +16,10 @@ import {
 
 type NavItem = { href: string; label: string; icon: any };
 const NAV: NavItem[] = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/about", label: "About", icon: UserRound },
+  { href: "/", label: "Beranda", icon: Home },
+  { href: "/about", label: "Tentang", icon: UserRound },
   { href: "/portfolio", label: "Portfolio", icon: Briefcase },
-  { href: "/blog", label: "Tips", icon: Newspaper },
+  { href: "/blog", label: "Tips & Trik", icon: Newspaper },
   { href: "/contact", label: "Kontak", icon: Phone },
 ];
 
@@ -101,12 +101,30 @@ export default function ExtremeNav() {
           <a
             href="https://wa.me/6282134027993"
             target="_blank"
-            className="hidden md:inline-flex items-center gap-2.5 rounded-full
-            bg-gradient-to-r from-cyan-400 to-violet-500 px-5 py-2.5 text-[14px]
-            font-semibold text-black shadow hover:opacity-90 transition"
+            rel="noopener noreferrer"
             aria-label="Chat via WhatsApp"
+            className="
+  group
+  hidden md:inline-flex
+  items-center gap-2.5
+  rounded-full
+  border border-white/20
+  bg-gradient-to-r
+  from-zinc-200/90 via-zinc-100 to-zinc-300
+  px-5 py-2.5
+  text-[14px]
+  font-semibold
+  text-black
+  backdrop-blur
+  shadow-[0_8px_25px_rgba(255,255,255,0.12)]
+  transition-all
+  duration-300
+  hover:scale-[1.03]
+  hover:shadow-[0_10px_35px_rgba(255,255,255,0.2)]
+  active:scale-[0.97]
+"
           >
-            <MessageCircle className="h-[18px] w-[18px]" />
+            <MessageCircle className="h-[18px] w-[18px] transition-transform duration-300 group-hover:rotate-6" />
             Chat
           </a>
 
@@ -187,13 +205,50 @@ export default function ExtremeNav() {
           <a
             href="https://wa.me/6282134027993"
             target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Chat via WhatsApp"
             onClick={() => setOpen(false)}
-            className="mt-4 inline-flex w-full items-center justify-center gap-2.5 rounded-full
-              bg-gradient-to-r from-cyan-400 to-violet-500 px-5 py-3 text-[15px] font-semibold text-black
-              shadow hover:opacity-90 transition"
+            className="
+  group
+  mt-5
+  inline-flex
+  w-full
+  items-center
+  justify-center
+  gap-2.5
+  rounded-full
+  border border-white/20
+  bg-gradient-to-r
+  from-zinc-200
+  via-zinc-100
+  to-zinc-300
+  px-5
+  py-3.5
+  text-[15px]
+  font-semibold
+  text-black
+  backdrop-blur
+  shadow-[0_10px_28px_rgba(255,255,255,0.15)]
+  transition-all
+  duration-200
+  active:scale-[0.96]
+  active:shadow-[0_4px_12px_rgba(255,255,255,0.1)]
+  focus:outline-none
+  focus-visible:ring-2
+  focus-visible:ring-white/40
+"
           >
-            <MessageCircle className="h-[18px] w-[18px]" />
-            Chat
+            <MessageCircle
+              className="
+    h-[18px]
+    w-[18px]
+    transition-transform
+    duration-200
+    group-active:scale-110
+  "
+            />
+
+            <span>Chat via WhatsApp</span>
           </a>
         </nav>
       </aside>
