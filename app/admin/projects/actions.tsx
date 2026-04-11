@@ -40,6 +40,12 @@ const toNull = (v?: string | null) => {
   return s.length ? s : null;
 };
 
+const fixUrl = (url?: string) => {
+  if (!url) return "";
+  if (url.startsWith("http")) return url;
+  return `https://${url}`;
+};
+
 const csvToArray = (v?: string | null) =>
   (v ?? "")
     .split(",")
@@ -108,14 +114,16 @@ const BaseSchema = z.object({
   metaKeywords: z.string().optional().or(z.literal("")), // CSV
   canonicalUrl: z
     .string()
-    .url("Canonical harus URL valid")
     .optional()
-    .or(z.literal("")),
+    .refine((val) => !val || val === "" || /^https?:\/\/.+/.test(val), {
+      message: "Canonical harus URL valid",
+    }),
   ogImage: z
     .string()
-    .url("OG Image harus URL valid")
     .optional()
-    .or(z.literal("")),
+    .refine((val) => !val || val === "" || /^https?:\/\/.+/.test(val), {
+      message: "OG Image harus URL valid",
+    }),
 });
 
 /* ========= Actions ========= */
@@ -202,8 +210,8 @@ export async function upsertProject(form: FormData) {
     metaTitle: metaTitleRaw,
     metaDescription: metaDescriptionRaw,
     metaKeywords: metaKeywordsCSV,
-    canonicalUrl: canonicalUrlRaw,
-    ogImage: ogImageRaw,
+    canonicalUrl: fixUrl(canonicalUrlRaw),
+    ogImage: fixUrl(ogImageRaw),
   });
   if (!parsed.success)
     throw new Error(parsed.error.issues?.[0]?.message || "Invalid data");
