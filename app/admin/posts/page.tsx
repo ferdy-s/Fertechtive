@@ -8,13 +8,11 @@ import {
 } from "./actions";
 import Editor from "./ui";
 import { cookies } from "next/headers";
-import type { Prisma, Category as CategoryModel } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import SearchBar from "./SearchBar";
 
 /* ===== Types ===== */
-type PostWithRels = Prisma.PostGetPayload<{
-  include: { categories: true; author: true };
-}>;
+type PostWithRels = any;
 
 /* ===== Utils ===== */
 function fmtDate(d?: string | Date | null) {
@@ -43,7 +41,7 @@ export default async function AdminPostsPage({
     (Array.isArray(searchParams?.q) ? searchParams?.q[0] : searchParams?.q) ??
     "";
 
-  const where: Prisma.PostWhereInput = q
+  const where = q
     ? {
         OR: [
           { title: { contains: q, mode: "insensitive" } },
@@ -60,8 +58,8 @@ export default async function AdminPostsPage({
         orderBy: { createdAt: "desc" },
         include: { categories: true, author: true },
       })
-      .catch((e) => {
-        console.error("posts error:", e);
+      .catch((error: unknown) => {
+        console.error("posts error:", error);
         return [];
       }),
 
@@ -69,18 +67,18 @@ export default async function AdminPostsPage({
       .findMany({
         orderBy: { name: "asc" },
       })
-      .catch((e) => {
+      .catch((e: any) => {
         console.error("categories error:", e);
         return [];
       }),
 
-    prisma.post.count().catch((e) => {
-      console.error("count error:", e);
+    prisma.post.count().catch((error: unknown) => {
+      console.error("count error:", error);
       return 0;
     }),
   ]);
 
-  const publishedCount = posts.filter((p) => p.publishedAt).length;
+  const publishedCount = posts.filter((p: any) => p.publishedAt).length;
 
   return (
     <main className="relative mx-auto max-w-6xl w-full px-5 sm:px-6 py-10 text-white overflow-x-hidden">
@@ -112,7 +110,7 @@ export default async function AdminPostsPage({
       {/* ===== Post Baru: panel penuh (full width) ===== */}
       <section className="mb-4">
         <NewPostPanel
-          categories={categories.map((c) => ({ id: c.id, name: c.name }))}
+          categories={categories.map((c: any) => ({ id: c.id, name: c.name }))}
         />
       </section>
 
@@ -158,7 +156,7 @@ export default async function AdminPostsPage({
               <div className="rounded-2xl bg-white/[0.03] ring-1 ring-inset ring-white/10 px-4 py-4 hover:bg-white/[0.05] transition">
                 <PostRow
                   post={p}
-                  categories={categories.map((c) => ({
+                  categories={categories.map((c: any) => ({
                     id: c.id,
                     name: c.name,
                   }))}
@@ -183,7 +181,7 @@ export default async function AdminPostsPage({
 
         <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm p-4">
           <div className="flex flex-wrap gap-2">
-            {categories.map((c: CategoryModel) => (
+            {categories.map((c: any) => (
               <form
                 key={c.id}
                 action={async () => {
@@ -315,7 +313,7 @@ function PostRow({
 
         <div className="mt-3 flex flex-wrap gap-2">
           {post.categories.length ? (
-            post.categories.map((c) => (
+            post.categories.map((c: any) => (
               <span
                 key={c.id}
                 className="rounded-full border border-white/15 bg-white/[0.04] px-2.5 py-1 text-xs text-white/80"
@@ -502,8 +500,8 @@ function PostForm({
       <fieldset className="grid gap-2">
         <legend className="text-sm text-white/70">Kategori</legend>
         <div className="flex flex-wrap gap-3">
-          {categories.map((c) => {
-            const checked = post?.categories?.some((x) => x.id === c.id);
+          {categories.map((c: any) => {
+            const checked = post?.categories?.some((x: any) => x.id === c.id);
             return (
               <label
                 key={c.id}
