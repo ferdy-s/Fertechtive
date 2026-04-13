@@ -3,7 +3,7 @@ import AboutClient from "./AboutClient";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https://fertechtive-personal-portfolio-ferd-two.vercel.app/";
+  "https://fertechtive.vercel.app";
 
 const title = "Tentang";
 

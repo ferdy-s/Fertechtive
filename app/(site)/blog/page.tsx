@@ -46,7 +46,7 @@ export const dynamic = "force-dynamic";
 */
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https://fertechtive-personal-portfolio-ferd-two.vercel.app/";
+  "https://fertechtive.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

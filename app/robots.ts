@@ -1,14 +1,16 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://fertechtive.com";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://fertechtive.vercel.app";
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      // tambahkan disallow jika perlu
-    },
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+      },
+    ],
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

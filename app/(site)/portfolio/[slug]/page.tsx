@@ -5,14 +5,13 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import LightboxGallery from "@/components/LightboxGallery";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://fertechtive.vercel.app";
 
 /* ===== Helpers ===== */
-const safeDesc = (v?: string | null) =>
-  v ? v.slice(0, 160) : "";
+const safeDesc = (v?: string | null) => (v ? v.slice(0, 160) : "");
 
-const safeTitle = (v?: string | null) =>
-  v ? v.slice(0, 70) : "";
+const safeTitle = (v?: string | null) => (v ? v.slice(0, 70) : "");
 
 /* ===== Metadata ===== */
 export async function generateMetadata({
@@ -48,10 +47,7 @@ export async function generateMetadata({
       description,
       images: [
         {
-          url:
-            p.ogImage ||
-            p.thumbnailUrl ||
-            `${SITE_URL}/default-cover.jpg`,
+          url: p.ogImage || p.thumbnailUrl || `${SITE_URL}/default-cover.jpg`,
         },
       ],
     },
@@ -60,11 +56,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [
-        p.ogImage ||
-          p.thumbnailUrl ||
-          `${SITE_URL}/default-cover.jpg`,
-      ],
+      images: [p.ogImage || p.thumbnailUrl || `${SITE_URL}/default-cover.jpg`],
     },
   };
 }
@@ -108,7 +100,6 @@ export default async function PortfolioDetailPage({
       {/* HERO */}
       <header className="mx-auto max-w-[1400px] px-5 sm:px-8 md:px-10 pt-24 sm:pt-28 md:pt-40 pb-8 sm:pb-10 md:pb-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
-          
           {/* TEXT */}
           <div className="lg:col-span-5">
             <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-wide text-white/60">

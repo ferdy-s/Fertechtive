@@ -16,7 +16,8 @@ const NAV = [
 export default function FooterMonochromeCompact() {
   const year = new Date().getFullYear();
   const siteName = "Fertechtive";
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://fertechtive.com";
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://fertechtive.vercel.app";
   const email = "ferdysalsabilla87@gmail.com";
   const phoneIntl = "+6282134027993"; // E.164
 
