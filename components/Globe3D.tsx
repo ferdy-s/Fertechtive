@@ -1,4 +1,3 @@
-// components/Globe3D.tsx
 "use client";
 
 import { Canvas } from "@react-three/fiber";
@@ -11,7 +10,8 @@ function GlobePoints() {
     const pts = [];
     const radius = 2;
 
-    for (let i = 0; i < 5000; i++) {
+    // 🔥 TURUNKAN DARI 5000 → 1500
+    for (let i = 0; i < 1500; i++) {
       const phi = Math.acos(2 * Math.random() - 1);
       const theta = 2 * Math.PI * Math.random();
 
@@ -30,7 +30,7 @@ function GlobePoints() {
       <PointMaterial
         transparent
         color="#22d3ee"
-        size={0.02}
+        size={0.018} // sedikit lebih kecil
         sizeAttenuation
         depthWrite={false}
       />
@@ -41,10 +41,11 @@ function GlobePoints() {
 function Rings() {
   return (
     <>
-      {[...Array(4)].map((_, i) => (
+      {[...Array(3)].map((_, i) => (
         <mesh key={i} rotation={[Math.PI / 2 + i * 0.2, 0, 0]}>
-          <ringGeometry args={[2.5 + i * 0.3, 2.52 + i * 0.3, 128]} />
-          <meshBasicMaterial color="#22d3ee" transparent opacity={0.3} />
+          {/* 🔥 TURUNKAN SEGMENT 128 → 48 */}
+          <ringGeometry args={[2.5 + i * 0.3, 2.52 + i * 0.3, 48]} />
+          <meshBasicMaterial color="#22d3ee" transparent opacity={0.25} />
         </mesh>
       ))}
     </>
@@ -53,15 +54,23 @@ function Rings() {
 
 export default function Globe3D() {
   return (
-    <Canvas camera={{ position: [0, 0, 6] }}>
-      <ambientLight intensity={0.5} />
+    <Canvas
+      camera={{ position: [0, 0, 6] }}
+      dpr={[1, 1.5]} // 🔥 limit resolution
+      frameloop="demand" // 🔥 hanya render saat perlu
+    >
+      <ambientLight intensity={0.4} />
 
       <group rotation={[0.4, 0.2, 0]}>
         <GlobePoints />
         <Rings />
       </group>
 
-      <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} />
+      <OrbitControls
+        enableZoom={false}
+        autoRotate
+        autoRotateSpeed={0.3} // 🔥 lebih ringan
+      />
     </Canvas>
   );
 }
