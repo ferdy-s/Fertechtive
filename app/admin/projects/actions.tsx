@@ -2,10 +2,10 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import crypto from "crypto";
 import { z } from "zod";
+import { supabase } from "@/lib/supabase";
 import {
   deriveCategory,
   normalizeTags,
@@ -63,24 +63,51 @@ async function saveImages(slug: string, files: File[]) {
   const validFiles = files.filter(isAllowed);
   if (!validFiles.length) return out;
 
-  const dir = path.join(process.cwd(), "public", "uploads", "projects", slug);
-  await mkdir(dir, { recursive: true });
-
   let i = 0;
-  for (const file of validFiles) {
-    if (file.size > MAX_BYTES) throw new Error(`"${file.name}" > 8MB`);
 
-    const buf = Buffer.from(await file.arrayBuffer());
+  for (const file of validFiles) {
+    if (file.size > MAX_BYTES) {
+      throw new Error(`"${file.name}" > 8MB`);
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+
     const hash = crypto
       .createHash("sha256")
-      .update(buf)
+      .update(buffer)
       .digest("hex")
       .slice(0, 8);
-    const filename = `${(++i).toString().padStart(2, "0")}-${hash}${ext(file.name)}`;
-    await writeFile(path.join(dir, filename), buf, { flag: "w" });
 
-    out.push(path.posix.join("/uploads/projects", slug, filename));
+    const filename = `${(++i)
+      .toString()
+      .padStart(2, "0")}-${hash}${ext(file.name)}`;
+
+    const filePath = `${slug}/${filename}`;
+
+    // ✅ Upload ke Supabase
+    const { error } = await supabase.storage
+      .from("projects")
+      .upload(filePath, buffer, {
+        contentType: file.type,
+        upsert: true, // ✅ penting
+      });
+
+    if (error) {
+      throw new Error("Upload gagal: " + error.message);
+    }
+
+    // ✅ Ambil public URL
+    const { data } = supabase.storage
+      .from("projects")
+      .getPublicUrl(filePath);
+
+    if (!data?.publicUrl) {
+      throw new Error("Gagal mendapatkan public URL");
+    }
+
+    out.push(data.publicUrl);
   }
+
   return out;
 }
 
@@ -159,6 +186,8 @@ export async function deleteProject(id: string) {
   revalidatePath("/sitemap.xml");
   revalidatePath("/robots.txt");
 }
+
+
 
 export async function upsertProject(form: FormData) {
   // Ambil field dasar
