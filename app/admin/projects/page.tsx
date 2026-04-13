@@ -151,6 +151,7 @@ export default async function AdminProjectsPage() {
           />
           <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
             <ProjectUpload />
+
             <input type="hidden" name="images" id="images-input" />
           </div>
         </div>

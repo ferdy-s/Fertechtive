@@ -212,45 +212,32 @@ export async function deleteProject(formData: FormData) {
 }
 
 export async function upsertProject(form: FormData) {
-  // Ambil field dasar
   const id = String(form.get("id") ?? "");
   const titleRaw = String(form.get("title") ?? "").trim();
   const slugInput = String(form.get("slug") ?? "").trim();
   const description = String(form.get("description") ?? "").trim();
   const content = String(form.get("content") ?? "");
   const tagsInput = String(form.get("tags") ?? "");
+
+  // ✅ ambil dari hidden input (hasil upload client)
   const imagesJson = form.get("images") as string;
-  const images = imagesJson ? JSON.parse(imagesJson) : [];
+  const images: string[] = imagesJson ? JSON.parse(imagesJson) : [];
+
   const publishedOn = String(form.get("published") ?? "");
   const categoryRaw =
     (form.get("category") as string | null)?.toLowerCase() ?? "";
 
-  // SEO fields
+  // SEO
   const metaTitleRaw = String(form.get("metaTitle") ?? "");
   const metaDescriptionRaw = String(form.get("metaDescription") ?? "");
   const metaKeywordsCSV = String(form.get("metaKeywords") ?? "");
   const canonicalUrlRaw = String(form.get("canonicalUrl") ?? "");
   const ogImageRaw = String(form.get("ogImage") ?? "");
 
-  // Slugify
   const slug = slugify(slugInput || titleRaw);
   if (!titleRaw || !slug) throw new Error("Title & slug wajib diisi.");
 
-  // Validasi file
-  const rawFiles = form.getAll("images") as File[];
-  // filter file kosong (kadang browser mengirim File kosong saat tidak memilih file)
-  const files = rawFiles.filter((f) => f && f.name && f.size > 0);
-
-  if (files.length > MAX_FILES)
-    throw new Error(`Terlalu banyak gambar (maks ${MAX_FILES}).`);
-
-  const totalBytes = files.reduce((s, f) => s + (f?.size || 0), 0);
-  if (totalBytes > MAX_TOTAL)
-    throw new Error(
-      `Total ukuran gambar melebihi ${(MAX_TOTAL / (1024 * 1024)).toFixed(0)}MB. Kompres/kurangi file.`,
-    );
-
-  // Validasi Zod
+  // VALIDASI
   const parsed = BaseSchema.safeParse({
     title: titleRaw,
     slug,
@@ -259,19 +246,18 @@ export async function upsertProject(form: FormData) {
     tags: tagsInput,
     published: publishedOn ? "on" : undefined,
     category: categoryRaw,
-
     metaTitle: metaTitleRaw,
     metaDescription: metaDescriptionRaw,
     metaKeywords: metaKeywordsCSV,
     canonicalUrl: fixUrl(canonicalUrlRaw),
     ogImage: fixUrl(ogImageRaw),
   });
-  if (!parsed.success)
-    throw new Error(parsed.error.issues?.[0]?.message || "Invalid data");
 
-  // Normalisasi
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues?.[0]?.message || "Invalid data");
+  }
+
   const tags = normalizeTags(tagsInput);
-  const newImages = await saveImages(slug, files);
 
   const allowed = new Set<CategoryValue>([
     "programming",
@@ -279,19 +265,27 @@ export async function upsertProject(form: FormData) {
     "graphic",
     "marketing",
   ]);
+
   const pickedCategory =
     categoryRaw && allowed.has(categoryRaw as CategoryValue)
       ? (categoryRaw as CategoryValue)
       : undefined;
 
-  // SEO normalized values
+  const category =
+    pickedCategory ??
+    (deriveCategory({
+      tags,
+      title: titleRaw,
+      description,
+    }) as CategoryValue | undefined);
+
   const metaTitle = toNull(clampLen(metaTitleRaw, 70));
   const metaDescription = toNull(clampLen(metaDescriptionRaw, 160));
   const metaKeywords = csvToArray(metaKeywordsCSV);
   const canonicalUrl = toNull(canonicalUrlRaw);
   const ogImage = toNull(ogImageRaw);
 
-  // ====== UPDATE ======
+  // ================= UPDATE =================
   if (id) {
     const existing = await prisma.project.findUnique({ where: { id } });
     if (!existing) throw new Error("Project tidak ditemukan.");
@@ -299,22 +293,13 @@ export async function upsertProject(form: FormData) {
     const prevImages = Array.isArray(existing.images)
       ? (existing.images as string[])
       : [];
-    const mergedImages = newImages.length
-      ? [...prevImages, ...newImages]
+
+    const mergedImages = images.length
+      ? [...prevImages, ...images]
       : prevImages;
 
-    const category =
-      pickedCategory ??
-      (deriveCategory({
-        tags,
-        title: titleRaw,
-        description,
-      }) as CategoryValue | undefined);
+    const thumbnailUrl = existing.thumbnailUrl ?? mergedImages[0] ?? null;
 
-    const thumbnailUrl =
-      (existing as any).thumbnailUrl ?? mergedImages[0] ?? null;
-
-    // handle publishedAt
     const nowPublish = Boolean(publishedOn);
     const setPublishedAt =
       nowPublish && !existing.publishedAt ? new Date() : existing.publishedAt;
@@ -332,8 +317,6 @@ export async function upsertProject(form: FormData) {
         category: category ?? null,
         published: nowPublish,
         publishedAt: setPublishedAt,
-
-        // SEO
         metaTitle,
         metaDescription,
         metaKeywords,
@@ -342,28 +325,20 @@ export async function upsertProject(form: FormData) {
       },
     });
 
-    // revalidate daftar + detail (lama & baru jika slug berubah)
     revalidatePath("/admin/projects");
     revalidatePath("/portfolio");
     revalidatePath(`/portfolio/${updated.slug}`);
+
     if (existing.slug !== updated.slug) {
       revalidatePath(`/portfolio/${existing.slug}`);
     }
-    revalidatePath("/sitemap.xml");
-    revalidatePath("/robots.txt");
+
     return;
   }
 
-  // ====== CREATE ======
-  const category =
-    pickedCategory ??
-    (deriveCategory({
-      tags,
-      title: titleRaw,
-      description,
-    }) as CategoryValue | undefined);
+  // ================= CREATE =================
 
-  const thumbnailUrl = newImages[0] ?? null;
+  const thumbnailUrl = images[0] ?? null;
 
   await prisma.project.create({
     data: {
@@ -372,13 +347,11 @@ export async function upsertProject(form: FormData) {
       description,
       content,
       tags,
-      images: newImages,
+      images,
       thumbnailUrl,
       category: category ?? null,
       published: Boolean(publishedOn),
       publishedAt: Boolean(publishedOn) ? new Date() : null,
-
-      // SEO
       metaTitle,
       metaDescription,
       metaKeywords,
@@ -390,6 +363,4 @@ export async function upsertProject(form: FormData) {
   revalidatePath("/admin/projects");
   revalidatePath("/portfolio");
   revalidatePath(`/portfolio/${slug}`);
-  revalidatePath("/sitemap.xml");
-  revalidatePath("/robots.txt");
 }

@@ -13,10 +13,7 @@ export default function ProjectUpload() {
         .from("projects")
         .upload(path, file);
 
-      if (error) {
-        console.error(error);
-        continue;
-      }
+      if (error) continue;
 
       const { data } = supabaseClient.storage
         .from("projects")

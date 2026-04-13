@@ -8,10 +8,10 @@ export default function AdminProjectForm() {
     <form action={upsertProject} className="grid gap-4">
       <input name="title" placeholder="Title" />
 
-      {/* Upload langsung ke Supabase */}
+      {/* Upload */}
       <ProjectUpload />
 
-      {/* Hidden input untuk menampung URL hasil upload */}
+      {/* Hidden input untuk simpan URL */}
       <input type="hidden" name="images" id="images-input" />
 
       <button>Save</button>
