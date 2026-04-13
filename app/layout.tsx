@@ -41,10 +41,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body className={`${inter.className} bg-black text-white antialiased`}>
+      <body className={`${inter.className} ${roboto.className} bg-black text-white antialiased`}>
         {children}
       </body>
-      <body className={`${roboto.className} bg-black text-white antialiased`}></body>
     </html>
   );
 }
