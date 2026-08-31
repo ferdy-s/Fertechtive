@@ -70,7 +70,7 @@ export default function Page() {
               className="text-3xl md:text-5xl lg:text-[56px] font-bold leading-tight tracking-tight"
             >
               Tentang{" "}
-              <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-violet-400 bg-clip-text text-transparent">
+              <span className="font-bold underline decoration-white/20 underline-offset-8">
                 Fertechtive
               </span>
             </FadeIn>

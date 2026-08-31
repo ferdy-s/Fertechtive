@@ -110,9 +110,9 @@ export default function PortfolioClient({
           <div className="order-last lg:order-first space-y-5 lg:pl-10 xl:pl-10">
             <h1 className="text-4xl font-extrabold leading-tight tracking-tight md:text-5xl">
               Jelajahi{" "}
-              <span className="bg-gradient-to-r from-sky-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent">
-                Portfolio
-              </span>
+             <span className="font-bold underline decoration-white/20 underline-offset-8">
+  Portfolio
+</span>
             </h1>
        <p className="mt-4 text-[16px] leading-7 text-neutral-300 max-w-2xl">
   Kumpulan karya profesional dalam Web Development, UI/UX Design,

@@ -1,6 +1,7 @@
 import "../styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import PageTransition from "@/components/page-transition/PageTransition";
 
 // ✅ Gunakan SATU font saja (Inter sudah cukup)
 const inter = Inter({
@@ -56,9 +57,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body className={`${inter.className} bg-black text-white antialiased`}>
-        {children}
-      </body>
+     <body className={`${inter.className} bg-black text-white antialiased`}>
+  <PageTransition />
+  {children}
+</body>
     </html>
   );
 }

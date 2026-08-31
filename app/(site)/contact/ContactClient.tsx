@@ -41,7 +41,7 @@ Pesan:%0A${message}`;
             <div className="space-y-4">
               <h1 className="text-4xl font-extrabold leading-tight tracking-tight md:text-5xl">
                 Kontak{" "}
-                <span className="bg-gradient-to-r from-sky-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent">
+                <span className="font-bold underline decoration-white/20 underline-offset-8">
                   Ferdy.S
                 </span>
               </h1>
