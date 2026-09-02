@@ -13,6 +13,7 @@ type ProjectLike = {
   category?: string | null;
   thumbnailUrl?: string | null;
   published?: boolean | null;
+  categoryDerived?: CategoryValue;
 };
 
 type Totals = Record<"all" | CategoryValue, number>;
@@ -45,17 +46,28 @@ export default async function CategoryPageNumber({
 
   const projects = projectsRaw as unknown as ProjectLike[];
 
-  const filtered = projects.filter((p) => p.category === selected);
+  const filtered = projects.filter(
+    (p) => p.category === selected,
+  );
 
   const totalItems = filtered.length;
-  const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(totalItems / PAGE_SIZE),
+  );
 
   if (pageNumber > totalPages) {
     return notFound();
   }
 
   const start = (pageNumber - 1) * PAGE_SIZE;
-  const items = filtered.slice(start, start + PAGE_SIZE);
+
+  const items = filtered
+    .slice(start, start + PAGE_SIZE)
+    .map((p) => ({
+      ...p,
+      categoryDerived: selected,
+    }));
 
   const totals: Totals = {
     all: projects.length,

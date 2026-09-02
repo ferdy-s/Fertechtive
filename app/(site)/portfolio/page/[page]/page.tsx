@@ -13,6 +13,7 @@ type ProjectLike = {
   category?: string | null;
   thumbnailUrl?: string | null;
   published?: boolean | null;
+  categoryDerived?: CategoryValue;
 };
 
 type Totals = Record<"all" | CategoryValue, number>;
@@ -45,7 +46,22 @@ export default async function PortfolioPageNumber({
   }
 
   const start = (pageNumber - 1) * PAGE_SIZE;
-  const items = projects.slice(start, start + PAGE_SIZE);
+
+  const validCategories = new Set(
+    CATEGORY_LIST
+      .filter((category) => category.value !== "all")
+      .map((category) => category.value),
+  );
+
+  const items = projects
+    .slice(start, start + PAGE_SIZE)
+    .map((p) => ({
+      ...p,
+      categoryDerived:
+        p.category && validCategories.has(p.category as CategoryValue)
+          ? (p.category as CategoryValue)
+          : undefined,
+    }));
 
   const totals: Totals = {
     all: projects.length,

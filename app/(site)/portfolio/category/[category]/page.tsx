@@ -45,7 +45,12 @@ export default async function CategoryPage({
 
   const projects = projectsRaw as unknown as ProjectLike[];
 
-  const filtered = projects.filter((p) => p.category === selected);
+  const filtered = projects
+  .filter((p) => p.category === selected)
+  .map((p) => ({
+    ...p,
+    categoryDerived: selected,
+  }));
 
   /* ================= Calculate Totals ================= */
 

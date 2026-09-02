@@ -18,6 +18,7 @@ import {
   LayoutGrid,
   Zap,
   PanelLeft,
+  Code2,
   RefreshCw,
 } from "lucide-react";
 import {
@@ -81,17 +82,16 @@ export default function Page() {
               className="mt-5 text-[15px] md:text-[17px] lg:text-[15px] text-white/80 leading-relaxed max-w-2xl"
             >
               <strong>Fertechtive</strong> adalah identitas personal dari{" "}
-              <strong>Ferdy Salsabilla</strong>, seorang{" "}
-              <strong>Web Developer</strong> dan <strong>UI/UX Designer</strong>{" "}
-              dengan pengalaman lebih dari tiga tahun. <br />
-              <br />
-              Platform ini menjadi ruang untuk mendokumentasikan karya dan
-              eksperimen saya di bidang <strong>
-                website development
-              </strong>, <strong>UI/UX Designer</strong>,{" "}
-              <strong>Graphic Design</strong>, dan{" "}
-              <strong>Digital Marketing</strong> berbasis data, dengan fokus
-              pada pengalaman pengguna, performa, dan keberlanjutan digital.
+<strong>Ferdy Salsabilla</strong>, seorang{" "}
+<strong>Programmer</strong> dan <strong>UI/UX Designer</strong>{" "}
+dengan pengalaman lebih dari tiga tahun. <br />
+<br />
+Platform ini menjadi ruang untuk mendokumentasikan karya dan
+eksperimen saya dalam bidang <strong>Programming</strong>,{" "}
+<strong>UI/UX Design</strong>, <strong>Graphic Design</strong>, dan{" "}
+<strong>Digital Marketing</strong>, dengan fokus pada pengembangan
+produk digital yang fungsional, intuitif, berkinerja baik, dan
+berkelanjutan.
             </FadeIn>
 
             <div className="mt-6 flex flex-wrap gap-3">
@@ -152,129 +152,132 @@ export default function Page() {
                   >
 
                     <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible">
-                      {modules.map((m) => (
-                        <button
-                          key={m.id}
-                          onClick={() => setActive(m.id)}
-                          className={`
-group flex items-center justify-center lg:justify-start gap-3
-px-4 py-3 lg:px-5 lg:py-4 rounded-xl
-backdrop-blur-xl
-transition min-w-[60px] lg:min-w-full
-${
-  active === m.id
-    ? "bg-white/15 text-white shadow-xl"
-    : "text-white/60 hover:text-white hover:bg-white/[0.08]"
-}
-`}
-                        >
-                          <div className="flex items-center justify-center">
-                            {m.icon}
-                          </div>
+                     {modules.map((m) => (
+  <button
+    key={m.id}
+    onClick={() => setActive(m.id)}
+    aria-label={m.title}
+    aria-current={active === m.id ? "page" : undefined}
+    className={`
+      group flex items-center justify-center lg:justify-start gap-3
+      px-4 py-3 lg:px-5 lg:py-4 rounded-xl
+      backdrop-blur-xl
+      transition min-w-[60px] lg:min-w-full
+      ${
+        active === m.id
+          ? "bg-white/15 text-white shadow-xl"
+          : "text-white/60 hover:text-white hover:bg-white/[0.08]"
+      }
+    `}
+  >
+    <div
+      className="flex items-center justify-center"
+      aria-hidden="true"
+    >
+      {m.icon}
+    </div>
 
-                          <span className="hidden lg:block text-sm font-medium">
-                            {m.title}
-                          </span>
-                        </button>
-                      ))}
+    <span className="hidden lg:block text-sm font-medium">
+      {m.title}
+    </span>
+  </button>
+))}
                     </div>
                   </nav>
 
-                  {/* CONTENT */}
-                  <div className="space-y-16 min-h-[620px]">
-                    {/* APPROACH */}
-                    {active === "approach" && (
-                      <section>
-                        <header className="max-w-3xl">
-                          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
-                            Pendekatan Pengembangan
-                          </h2>
+                {/* CONTENT */}
+<div className="space-y-16 min-h-[620px]">
+  {/* APPROACH */}
+  {active === "approach" && (
+    <section aria-labelledby="pendekatan-pengembangan">
+      <header className="max-w-3xl">
+        <div className="flex items-center gap-3">
+          <h2
+            id="pendekatan-pengembangan"
+            className="text-3xl md:text-4xl font-semibold tracking-tight"
+          >
+            Pendekatan Pengembangan
+          </h2>
+        </div>
 
-                          <p className="mt-4 text-white/70 leading-relaxed">
-                            Pendekatan kerja saya menggabungkan desain
-                            pengalaman pengguna, arsitektur perangkat lunak yang
-                            terstruktur, serta praktik software engineering
-                            modern untuk menghasilkan sistem digital yang
-                            stabil, efisien, dan mudah dikembangkan.
-                          </p>
-                        </header>
+        <p className="mt-4 text-white/70 leading-relaxed text-[15px]">
+          Pendekatan kerja saya menggabungkan UX, arsitektur software, dan
+          software engineering modern untuk menghasilkan sistem yang stabil,
+          efisien, dan scalable.
+        </p>
+      </header>
 
-                        <div className="grid gap-5 md:grid-cols-2 mt-10">
-                          {[
-                            {
-                              title: "Pendekatan Berbasis Pengguna",
-                              icon: <Users className="w-5 h-5 text-white" />,
-                              points: [
-                                "Analisis kebutuhan pengguna, audiens, dan stakeholder sebelum proses perancangan dimulai.",
-                                "Perancangan user journey dan alur interaksi yang jelas untuk memastikan pengalaman pengguna yang intuitif.",
-                                "Validasi konsep melalui wireframe, prototype, serta evaluasi awal terhadap desain dan fungsi sistem.",
-                                "Pendekatan ini digunakan dalam pengembangan website, desain UI/UX, serta strategi komunikasi visual.",
-                              ],
-                            },
-                            {
-                              title: "Struktur Sistem dan Desain Terorganisir",
-                              icon: (
-                                <LayoutGrid className="w-5 h-5 text-white" />
-                              ),
-                              points: [
-                                "Perancangan arsitektur sistem yang modular agar mudah dikembangkan dan dipelihara.",
-                                "Pengembangan desain visual yang konsisten melalui sistem desain dan identitas brand.",
-                                "Integrasi antar komponen sistem untuk memastikan pengalaman pengguna yang konsisten.",
-                                "Pendekatan ini mendukung pengembangan website, aplikasi, desain grafis, serta platform digital lainnya.",
-                              ],
-                            },
-                            {
-                              title: "Efisiensi dan Optimasi Performa",
-                              icon: <Zap className="w-5 h-5 text-white" />,
-                              points: [
-                                "Optimasi performa website dan aplikasi agar cepat diakses di berbagai perangkat.",
-                                "Pengelolaan sumber daya digital secara efisien untuk menjaga stabilitas sistem.",
-                                "Penggunaan pendekatan desain yang ringan dan responsif untuk meningkatkan kenyamanan pengguna.",
-                                "Strategi ini juga diterapkan dalam optimasi konten digital dan performa pemasaran online.",
-                              ],
-                            },
-                            {
-                              title: "Evaluasi dan Pengembangan Berkelanjutan",
-                              icon: (
-                                <RefreshCw className="w-5 h-5 text-white" />
-                              ),
-                              points: [
-                                "Monitoring performa sistem dan pengalaman pengguna secara berkala.",
-                                "Analisis data interaksi pengguna untuk meningkatkan kualitas produk digital.",
-                                "Iterasi desain dan pengembangan berdasarkan hasil evaluasi penggunaan.",
-                                "Pendekatan ini memastikan produk digital terus berkembang sesuai kebutuhan pengguna dan pasar.",
-                              ],
-                            },
-                          ].map((item, i) => (
-                            <article
-                              key={i}
-                              className="
-      rounded-2xl border border-white/20
-      bg-white/[0.07] backdrop-blur-xl
-      p-8
-      hover:bg-white/[0.12]
-      transition-all duration-300
-      shadow-[0_10px_40px_rgba(0,0,0,0.3)]
-    "
-                            >
-                              <div className="flex items-center gap-2">
-                                {item.icon}
+      <div className="grid gap-6 md:grid-cols-2 mt-10">
+        {[
+          {
+            icon: <Users className="h-5 w-5 text-white" />,
+            title: "Pendekatan Berbasis Pengguna",
+            points: [
+              "Analisis kebutuhan pengguna, audiens, dan stakeholder sebelum proses perancangan dimulai.",
+              "Perancangan user journey dan alur interaksi yang jelas untuk memastikan pengalaman pengguna yang intuitif.",
+              "Validasi konsep melalui wireframe, prototype, serta evaluasi awal terhadap desain dan fungsi sistem.",
+              "Pendekatan ini digunakan dalam pengembangan website, desain UI/UX, serta strategi komunikasi visual.",
+            ],
+          },
 
-                                <h3 className="text-lg font-semibold">
-                                  {item.title}
-                                </h3>
-                              </div>
+          {
+            icon: <LayoutGrid className="h-5 w-5 text-white" />,
+            title: "Struktur Sistem dan Desain Terorganisir",
+            points: [
+              "Perancangan arsitektur sistem yang modular agar mudah dikembangkan dan dipelihara.",
+              "Pengembangan desain visual yang konsisten melalui sistem desain dan identitas brand.",
+              "Integrasi antar komponen sistem untuk memastikan pengalaman pengguna yang konsisten.",
+              "Pendekatan ini mendukung pengembangan website, aplikasi, desain grafis, serta platform digital lainnya.",
+            ],
+          },
 
-                              <ul className="mt-4 space-y-2 text-sm text-white/70 leading-relaxed">
-                                {item.points.map((p, pi) => (
-                                  <li key={pi}>• {p}</li>
-                                ))}
-                              </ul>
-                            </article>
-                          ))}
-                        </div>
-                      </section>
-                    )}
+          {
+            icon: <Zap className="h-5 w-5 text-white" />,
+            title: "Efisiensi dan Optimasi Performa",
+            points: [
+              "Optimasi performa website dan aplikasi agar cepat diakses di berbagai perangkat.",
+              "Pengelolaan sumber daya digital secara efisien untuk menjaga stabilitas sistem.",
+              "Penggunaan pendekatan desain yang ringan dan responsif untuk meningkatkan kenyamanan pengguna.",
+              "Strategi ini juga diterapkan dalam optimasi konten digital dan performa pemasaran online.",
+            ],
+          },
+
+          {
+            icon: <RefreshCw className="h-5 w-5 text-white" />,
+            title: "Evaluasi dan Pengembangan Berkelanjutan",
+            points: [
+              "Monitoring performa sistem dan pengalaman pengguna secara berkala.",
+              "Analisis data interaksi pengguna untuk meningkatkan kualitas produk digital.",
+              "Iterasi desain dan pengembangan berdasarkan hasil evaluasi penggunaan.",
+              "Pendekatan ini memastikan produk digital terus berkembang sesuai kebutuhan pengguna dan pasar.",
+            ],
+          },
+        ].map((approach, i) => (
+          <article
+            key={i}
+            className="rounded-2xl border border-white/20
+bg-white/[0.07] backdrop-blur-xl
+p-8 hover:bg-white/[0.12]
+transition duration-300"
+          >
+            <div className="flex items-center gap-3">
+              {approach.icon}
+
+              <h3 className="text-lg font-semibold">
+                {approach.title}
+              </h3>
+            </div>
+
+            <ul className="mt-4 list-disc pl-5 text-sm text-white/70 space-y-2">
+              {approach.points.map((point, pi) => (
+                <li key={pi}>{point}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
 
                     {/* SKILLS */}
                     {active === "skills" && (
@@ -290,32 +293,24 @@ ${
                           </div>
 
                           <p className="mt-4 text-white/70 leading-relaxed text-[15px]">
-                            Kemampuan teknis saya mencakup berbagai disiplin
-                            dalam pengembangan produk digital modern, mulai dari
-                            pengembangan website, desain pengalaman pengguna,
-                            pembuatan identitas visual, hingga strategi
-                            pemasaran digital. Pendekatan ini memungkinkan saya
-                            untuk membangun produk digital yang tidak hanya
-                            berfungsi secara teknis, tetapi juga memiliki nilai
-                            visual, pengalaman pengguna yang baik, serta
-                            strategi distribusi yang efektif.
+                           Kemampuan teknis saya mencakup pengembangan website, UI/UX, identitas visual, dan pemasaran digital untuk membangun produk digital yang fungsional, menarik, dan efektif.
                           </p>
                         </header>
 
                         <div className="grid gap-6 md:grid-cols-2 mt-10">
                           {[
-                            {
-                              icon: <Globe className="h-5 w-5 text-white" />,
-                              title: "Web Development",
-                              desc: "Pengembangan website modern yang cepat, responsif, dan mudah dikembangkan untuk berbagai kebutuhan bisnis maupun produk digital.",
-                              points: [
-                                "Pengembangan antarmuka website modern dengan struktur yang efisien, performa tinggi, serta pengalaman pengguna yang konsisten di berbagai perangkat.",
-                                "Penerapan desain responsif agar website optimal di berbagai perangkat",
-                                "Integrasi API dan layanan backend untuk sistem dinamis",
-                                "Optimasi performa website untuk kecepatan akses dan stabilitas sistem",
-                                "Penerapan praktik SEO teknis agar website mudah ditemukan oleh mesin pencari",
-                              ],
-                            },
+                           {
+  icon: <Code2 className="h-5 w-5 text-white" />,
+  title: "Programming",
+  desc: "Pengembangan software end-to-end meliputi full-stack, mobile, API, database, workflow, serta AI & data.",
+  points: [
+    "Pengembangan aplikasi web dan mobile yang responsif, efisien, dan scalable.",
+    "Integrasi RESTful API, authentication, dan layanan backend untuk sistem dinamis.",
+    "Pengelolaan database serta penerapan arsitektur software yang maintainable.",
+    "Penerapan development tools dan workflow untuk mendukung proses pengembangan.",
+    "Implementasi AI & data seperti collaborative filtering, cosine similarity, dan recommendation system.",
+  ],
+},
 
                             {
                               icon: <PenTool className="h-5 w-5 text-white" />,
@@ -400,115 +395,320 @@ transition duration-300"
                           </h2>
 
                           <p className="mt-5 text-white/70 leading-relaxed text-[15px]">
-                            Berbagai tools dan teknologi berikut digunakan dalam
-                            proses pengembangan produk digital. Teknologi ini
-                            mendukung pembuatan sistem yang stabil, desain
-                            visual yang konsisten, serta strategi distribusi
-                            digital yang efektif.
+                            Berbagai tools dan teknologi digunakan untuk mendukung pengembangan sistem, desain visual, dan distribusi digital yang efektif.
                           </p>
                         </header>
 
                         <div className="grid gap-6 md:grid-cols-2 mt-10">
                           {[
-                            {
-                              category: "Website Development",
-                              icon: <Globe className="w-5 h-5 text-white" />,
-                              desc: "Teknologi yang digunakan untuk membangun website modern dengan performa tinggi, struktur yang scalable, serta pengalaman pengguna yang responsif.",
-                              tools: [
-                                {
-                                  name: "HTML5",
-                                  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg",
-                                },
-                                {
-                                  name: "CSS3",
-                                  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg",
-                                },
-                                {
-                                  name: "JavaScript",
-                                  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
-                                },
-                                {
-                                  name: "React",
-                                  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
-                                },
-                                {
-                                  name: "Next.js",
-                                  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg",
-                                },
-                                {
-                                  name: "TailwindCSS",
-                                  icon: "https://skillicons.dev/icons?i=tailwind",
-                                },
-                                {
-                                  name: "Node.js",
-                                  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",
-                                },
-                                {
-                                  name: "Laravel",
-                                  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg",
-                                },
-                                {
-                                  name: "PHP",
-                                  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg",
-                                },
-                                {
-                                  name: "Python",
-                                  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
-                                },
-                                {
-                                  name: "REST API",
-                                  icon: "https://cdn-icons-png.flaticon.com/512/2165/2165004.png",
-                                },
-                                {
-                                  name: "JWT",
-                                  icon: "https://jwt.io/img/logo.svg",
-                                },
-                                {
-                                  name: "PostgreSQL",
-                                  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg",
-                                },
-                                {
-                                  name: "MySQL",
-                                  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg",
-                                },
-                                {
-                                  name: "Visual Studio Code",
-                                  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg",
-                                },
-                              ],
-                            },
+                 {
+  category: "Programming",
+  icon: <Code2 className="w-5 h-5 text-white" />,
+  desc: "Technical skills & teknologi untuk software, full-stack, mobile, workflow, serta AI & data development.",
+  tools: [
+    /* FULL STACK DEVELOPMENT */
+    {
+      name: "React.js",
+      group: "Full Stack Development",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+    },
+    {
+      name: "Next.js",
+      group: "Full Stack Development",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg",
+    },
+    {
+      name: "TypeScript",
+      group: "Full Stack Development",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
+    },
+    {
+      name: "JavaScript",
+      group: "Full Stack Development",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
+    },
+    {
+      name: "Tailwind CSS",
+      group: "Full Stack Development",
+      icon:
+        "https://skillicons.dev/icons?i=tailwind",
+    },
+    {
+      name: "Laravel",
+      group: "Full Stack Development",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg",
+    },
+    {
+      name: "PHP",
+      group: "Full Stack Development",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg",
+    },
+    {
+      name: "Node.js",
+      group: "Full Stack Development",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",
+    },
+    {
+      name: "Python",
+      group: "Full Stack Development",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
+    },
+    {
+      name: "RESTful API",
+      group: "Full Stack Development",
+      icon:
+        "https://cdn-icons-png.flaticon.com/512/2165/2165004.png",
+    },
+    {
+      name: "Authentication",
+      group: "Full Stack Development",
+      icon:
+        "https://cdn-icons-png.flaticon.com/512/3064/3064197.png",
+    },
+    {
+      name: "PostgreSQL",
+      group: "Full Stack Development",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg",
+    },
+    {
+      name: "MySQL",
+      group: "Full Stack Development",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg",
+    },
+    {
+  name: "GraphQL",
+  group: "Full Stack Development",
+  icon:
+    "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg",
+},
+    {
+      name: "Prisma ORM",
+      group: "Full Stack Development",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prisma/prisma-original.svg",
+    },
 
-                            {
-                              category: "UI UX Design",
-                              icon: <PenTool className="w-5 h-5 text-white" />,
-                              desc: "Tools desain yang digunakan untuk merancang pengalaman pengguna yang intuitif serta menciptakan antarmuka yang konsisten dan mudah digunakan.",
-                              tools: [
-                                {
-                                  name: "Figma",
-                                  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
-                                },
-                                {
-                                  name: "Framer",
-                                  icon: "https://cdn.simpleicons.org/framer/0055FF",
-                                },
-                                {
-                                  name: "Adobe XD",
-                                  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/xd/xd-original.svg",
-                                },
-                                {
-                                  name: "Design System",
-                                  icon: "https://img.icons8.com/fluency/48/design.png",
-                                },
-                                {
-                                  name: "Wireframing",
-                                  icon: "https://img.icons8.com/color/48/web-design.png",
-                                },
-                                {
-                                  name: "Prototyping",
-                                  icon: "https://img.icons8.com/fluency/48/prototype.png",
-                                },
-                              ],
-                            },
+   /* MOBILE APPLICATION DEVELOPMENT */
+{
+  name: "Flutter",
+  group: "Mobile Application Development",
+  icon:
+    "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg",
+},
+{
+  name: "Dart",
+  group: "Mobile Application Development",
+  icon:
+    "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dart/dart-original.svg",
+},
+{
+  name: "Kotlin",
+  group: "Mobile Application Development",
+  icon:
+    "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg",
+},
+{
+  name: "React Native",
+  group: "Mobile Application Development",
+  icon:
+    "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
+},
+{
+  name: "Firebase",
+  group: "Mobile Application Development",
+  icon:
+    "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg",
+},
+    /* DEVELOPMENT TOOLS & WORKFLOW */
+    {
+      name: "Git",
+      group: "Development Tools & Workflow",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg",
+    },
+    {
+      name: "GitHub",
+      group: "Development Tools & Workflow",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg",
+    },
+    {
+      name: "Visual Studio Code",
+      group: "Development Tools & Workflow",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg",
+    },
+    {
+      name: "Thunder Client",
+      group: "Development Tools & Workflow",
+      icon:
+        "https://www.thunderclient.com/favicon.ico",
+    },
+    {
+      name: "Android Studio",
+      group: "Development Tools & Workflow",
+      icon:
+        "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/androidstudio/androidstudio-original.svg",
+    },
+
+    /* AI & DATA DEVELOPMENT */
+    {
+      name: "Collaborative Filtering",
+      group: "AI & Data Development",
+      icon:
+        "https://cdn-icons-png.flaticon.com/512/2103/2103633.png",
+    },
+    {
+      name: "Cosine Similarity",
+      group: "AI & Data Development",
+      icon:
+        "https://cdn-icons-png.flaticon.com/512/2103/2103633.png",
+    },
+    {
+      name: "Recommendation System",
+      group: "AI & Data Development",
+      icon:
+        "https://cdn-icons-png.flaticon.com/512/2103/2103633.png",
+    },
+    {
+  name: "Data Analysis",
+  group: "AI & Data Development",
+  icon:
+    "https://cdn-icons-png.flaticon.com/512/2103/2103633.png",
+},
+{
+  name: "Machine Learning",
+  group: "AI & Data Development",
+  icon:
+    "https://cdn-icons-png.flaticon.com/512/2103/2103633.png",
+},
+  ],
+},
+
+             {
+  category: "UI UX Design",
+  icon: <PenTool className="w-5 h-5 text-white" />,
+  desc: "Tools & metode untuk merancang UI/UX yang intuitif, konsisten, dan mudah digunakan.",
+  tools: [
+    // UI/UX DESIGN TOOLS
+    {
+      name: "Figma",
+      group: "UI/UX DESIGN TOOLS",
+      icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg",
+    },
+    {
+      name: "Framer",
+      group: "UI/UX DESIGN TOOLS",
+      icon: "https://cdn.simpleicons.org/framer/0055FF",
+    },
+    {
+      name: "Adobe XD",
+      group: "UI/UX DESIGN TOOLS",
+      icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/xd/xd-original.svg",
+    },
+    {
+      name: "Sketch",
+      group: "UI/UX DESIGN TOOLS",
+      icon: "https://cdn.simpleicons.org/sketch/F7B500",
+    },
+    {
+      name: "FigJam",
+      group: "UI/UX DESIGN TOOLS",
+      icon: "https://cdn.simpleicons.org/figjam/F24E1E",
+    },
+
+    // DESIGN SYSTEM & INTERFACE
+    {
+      name: "Design System",
+      group: "DESIGN SYSTEM & INTERFACE",
+      icon: "https://img.icons8.com/fluency/48/design.png",
+    },
+    {
+      name: "Wireframing",
+      group: "DESIGN SYSTEM & INTERFACE",
+      icon: "https://img.icons8.com/color/48/web-design.png",
+    },
+    {
+      name: "Prototyping",
+      group: "DESIGN SYSTEM & INTERFACE",
+      icon: "https://img.icons8.com/fluency/48/prototype.png",
+    },
+    {
+      name: "User Flow",
+      group: "DESIGN SYSTEM & INTERFACE",
+      icon: "https://img.icons8.com/fluency/48/flow-chart.png",
+    },
+    {
+      name: "Information Architecture",
+      group: "DESIGN SYSTEM & INTERFACE",
+      icon: "https://img.icons8.com/fluency/48/organization.png",
+    },
+
+    // UX RESEARCH & STRATEGY
+    {
+      name: "User Research",
+      group: "UX RESEARCH & STRATEGY",
+      icon: "https://img.icons8.com/fluency/48/search.png",
+    },
+    {
+      name: "User Persona",
+      group: "UX RESEARCH & STRATEGY",
+      icon: "https://img.icons8.com/fluency/48/user-male-circle.png",
+    },
+    {
+      name: "User Journey",
+      group: "UX RESEARCH & STRATEGY",
+      icon: "https://img.icons8.com/fluency/48/journey.png",
+    },
+    {
+      name: "Usability Testing",
+      group: "UX RESEARCH & STRATEGY",
+      icon: "https://img.icons8.com/fluency/48/test-passed.png",
+    },
+    {
+      name: "Competitive Analysis",
+      group: "UX RESEARCH & STRATEGY",
+      icon: "https://img.icons8.com/fluency/48/combo-chart.png",
+    },
+
+    // VISUAL DESIGN
+ {
+  name: "Typography",
+  group: "VISUAL DESIGN",
+  icon: "https://api.iconify.design/mdi/format-letter-case.svg?color=%23FFFFFF",
+},
+{
+  name: "Color Theory",
+  group: "VISUAL DESIGN",
+  icon: "https://api.iconify.design/mdi/palette.svg?color=%23FFD43B",
+},
+{
+  name: "Responsive Design",
+  group: "VISUAL DESIGN",
+  icon: "https://api.iconify.design/mdi/responsive.svg?color=%2338BDF8",
+},
+{
+  name: "Accessibility",
+  group: "VISUAL DESIGN",
+  icon: "https://api.iconify.design/mdi/accessibility.svg?color=%234ADE80",
+},
+{
+  name: "Visual Hierarchy",
+  group: "VISUAL DESIGN",
+  icon: "https://api.iconify.design/mdi/layers.svg?color=%23C084FC",
+},
+  ],
+},
 
                             {
                               category: "Graphic Design",
@@ -527,6 +727,10 @@ transition duration-300"
                                   name: "CorelDRAW",
                                   icon: "https://cdn.simpleicons.org/coreldraw/46A247",
                                 },
+                                {
+  name: "Canva",
+  icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/canva/canva-original.svg",
+},
                               ],
                             },
 
@@ -535,7 +739,7 @@ transition duration-300"
                               icon: (
                                 <TrendingUp className="w-5 h-5 text-white" />
                               ),
-                              desc: "Tools yang digunakan untuk menganalisis performa website, meningkatkan visibilitas pada mesin pencari, serta mengelola distribusi konten digital.",
+                              desc: "Tools untuk menganalisis performa website, meningkatkan SEO, dan mengelola distribusi konten digital.",
                               tools: [
                                 {
                                   name: "Google Analytics",
@@ -552,14 +756,6 @@ transition duration-300"
                                 {
                                   name: "Ahrefs SEO Analysis",
                                   icon: "/icon/ahrefs.svg",
-                                },
-                                {
-                                  name: "Microsoft Excel",
-                                  icon: "https://img.icons8.com/color/48/microsoft-excel-2019.png",
-                                },
-                                {
-                                  name: "Microsoft PowerPoint",
-                                  icon: "https://img.icons8.com/color/48/microsoft-powerpoint-2019.png",
                                 },
                               ],
                             },
@@ -585,24 +781,176 @@ transition duration-300"
                                 {item.desc}
                               </p>
 
-                              <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 mt-6">
-                                {item.tools.map((tool, ti) => (
-                                  <div
-                                    key={ti}
-                                    className="flex flex-col items-center gap-2 text-center"
-                                  >
-                                    <img
-                                      src={tool.icon}
-                                      alt={tool.name}
-                                      className="w-8 h-8 object-contain"
-                                    />
+{/* ==========================================
+    GROUPED CATEGORIES
+========================================== */}
+{item.category === "Programming" ||
+item.category === "UI UX Design" ? (
+  <div
+    className="
+      mt-5
+      max-h-[430px]
+      overflow-y-auto
+      overscroll-contain
+      scroll-smooth
+      pr-1
+      [-ms-overflow-style:none]
+      [scrollbar-width:none]
+      [&::-webkit-scrollbar]:hidden
+    "
+  >
+    {(() => {
+      const groups = item.tools.reduce(
+        (acc, tool) => {
+          if (!("group" in tool) || !tool.group) {
+            return acc;
+          }
 
-                                    <span className="text-xs text-white/70">
-                                      {tool.name}
-                                    </span>
-                                  </div>
-                                ))}
-                              </div>
+          if (!acc[tool.group]) {
+            acc[tool.group] = [];
+          }
+
+          acc[tool.group].push(tool);
+
+          return acc;
+        },
+        {} as Record<string, typeof item.tools>
+      );
+
+      return Object.entries(groups).map(
+        ([groupName, groupTools]) => (
+          <section
+            key={groupName}
+            aria-labelledby={`skill-group-${groupName
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")}`}
+            className="mb-5 last:mb-0"
+          >
+            {/* CATEGORY */}
+            <div className="flex items-center gap-2 mb-3">
+              <div
+                className="h-px flex-1 bg-white/10"
+                aria-hidden="true"
+              />
+
+              <h4
+                id={`skill-group-${groupName
+                  .toLowerCase()
+                  .replace(/[^a-z0-9]+/g, "-")}`}
+                className="
+                  text-[9px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.14em]
+                  text-white/40
+                  whitespace-nowrap
+                "
+              >
+                {groupName}
+              </h4>
+
+              <div
+                className="h-px flex-1 bg-white/10"
+                aria-hidden="true"
+              />
+            </div>
+
+            {/* TOOLS */}
+            <div className="grid grid-cols-4 sm:grid-cols-5 gap-x-2 gap-y-4">
+              {groupTools.map((tool, ti) => (
+                <div
+                  key={`${groupName}-${tool.name}-${ti}`}
+                  className="
+                    flex
+                    flex-col
+                    items-center
+                    justify-start
+                    gap-1.5
+                    text-center
+                    min-w-0
+                  "
+                >
+                  <div className="flex items-center justify-center w-9 h-9 shrink-0">
+                    <img
+                      src={tool.icon}
+                      alt={`${tool.name} technology icon`}
+                      width={32}
+                      height={32}
+                      loading="lazy"
+                      decoding="async"
+                      className="
+                        w-8
+                        h-8
+                        object-contain
+                        transition-transform
+                        duration-200
+                        group-hover:scale-[1.02]
+                      "
+                    />
+                  </div>
+
+                  <span
+                    title={tool.name}
+                    className="
+                      text-[10px]
+                      leading-[1.25]
+                      text-white/65
+                      line-clamp-2
+                    "
+                  >
+                    {tool.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      );
+    })()}
+  </div>
+) : (
+  /* ==========================================
+     OTHER CATEGORIES
+  ========================================== */
+  <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 mt-6">
+    {item.tools.map((tool, ti) => (
+      <div
+        key={`${item.category}-${tool.name}-${ti}`}
+        className="
+          flex
+          flex-col
+          items-center
+          justify-start
+          gap-2
+          text-center
+        "
+      >
+        <div className="flex items-center justify-center w-9 h-9 shrink-0">
+          <img
+            src={tool.icon}
+            alt={`${tool.name} tool icon`}
+            width={32}
+            height={32}
+            loading="lazy"
+            decoding="async"
+            className="w-8 h-8 object-contain"
+          />
+        </div>
+
+        <span
+          title={tool.name}
+          className="
+            text-xs
+            leading-tight
+            text-white/70
+          "
+        >
+          {tool.name}
+        </span>
+      </div>
+    ))}
+  </div>
+)}
                             </article>
                           ))}
                         </div>
@@ -628,12 +976,12 @@ transition duration-300"
 
                         <div className="grid gap-5 md:grid-cols-2 mt-10">
                           {[
-                            {
-                              title: "Website Development",
-                              icon: <Globe className="w-5 h-5 text-white" />,
-                              desc: "Pengembangan website dengan performa tinggi, struktur yang scalable, serta pengalaman pengguna yang responsif.",
-                              href: "/portfolio/category/programming",
-                            },
+                           {
+  title: "Programming",
+  icon: <Code2 className="w-5 h-5 text-white" />,
+  desc: "Pengembangan software end-to-end mencakup full-stack, mobile, API, database, workflow, serta AI & data.",
+  href: "/portfolio/category/programming",
+},
                             {
                               title: "UI UX Design",
                               icon: <PenTool className="w-5 h-5 text-white" />,

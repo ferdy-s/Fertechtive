@@ -159,99 +159,115 @@ ${isActive(href) ? "bg-white text-black" : "text-white/70 hover:text-white hover
       )}
 
       {/* === Mobile Drawer === */}
-      <aside
-        className={`fixed right-0 top-0 z-50 h-screen w-[84%] max-w-sm
-        bg-deep-900/95 border-l border-white/10 backdrop-blur-xl
-        transition-transform duration-500 md:hidden
-        ${open ? "translate-x-0" : "translate-x-full"}`}
-        role="dialog"
-        aria-modal="true"
-      >
-        {/* Drawer header with brand + X */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-3">
-          <Link
-  href="/"
-  className="text-[20px] font-semibold tracking-tight flex items-center"
-  onClick={() => setOpen(false)}
+     {/* === Mobile Drawer === */}
+<div
+  className={`fixed right-0 top-0 z-50 h-screen w-[84%] max-w-sm
+  bg-deep-900/95 border-l border-white/10 backdrop-blur-xl
+  transition-transform duration-500 md:hidden
+  ${open ? "translate-x-0" : "translate-x-full"}`}
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="mobile-menu-title"
+  aria-hidden={!open}
 >
-  Fertechtive<span className="text-cyan-300 ml-[1px]">.</span>
-</Link>
-          <button
-            onClick={() => setOpen(false)}
-            aria-label="Tutup menu"
-            className="grid h-11 w-11 place-items-center rounded-xl border border-white/15 bg-white/5"
-          >
-            <X className="h-6 w-6" />
-          </button>
-        </div>
+  {/* Drawer header with brand + X */}
+  <div className="flex items-center justify-between px-5 pt-5 pb-3">
+    <h2 id="mobile-menu-title" className="sr-only">
+      Menu navigasi mobile
+    </h2>
 
-        <nav
-          className="mt-2 flex flex-col gap-2 px-5"
-          aria-label="Mobile Primary"
-        >
-          {NAV.map(({ href, label, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setOpen(false)}
-              className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-semibold transition
-              ${isActive(href) ? "bg-white text-black" : "text-white/90 hover:bg-white/10"}`}
-            >
-              <Icon className="h-[18px] w-[18px]" />
-              {label}
-            </Link>
-          ))}
+    <Link
+      href="/"
+      className="text-[20px] font-semibold tracking-tight flex items-center"
+      onClick={() => setOpen(false)}
+    >
+      Fertechtive<span className="text-cyan-300 ml-[1px]">.</span>
+    </Link>
 
-          <a
-            href="https://wa.me/6282134027993"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Chat via WhatsApp"
-            onClick={() => setOpen(false)}
-            className="
-  group
-  mt-5
-  inline-flex
-  w-full
-  items-center
-  justify-center
-  gap-2.5
-  rounded-full
-  border border-white/20
-  bg-gradient-to-r
-  from-zinc-200
-  via-zinc-100
-  to-zinc-300
-  px-5
-  py-3.5
-  text-[15px]
-  font-semibold
-  text-black
-  backdrop-blur
-  shadow-[0_10px_28px_rgba(255,255,255,0.15)]
-  transition-all
-  duration-200
-  active:scale-[0.96]
-  active:shadow-[0_4px_12px_rgba(255,255,255,0.1)]
-  focus:outline-none
-  focus-visible:ring-2
-  focus-visible:ring-white/40
-"
-          >
-            <MessageCircle
-              className="
-    h-[18px]
-    w-[18px]
-    transition-transform
-    duration-200
-    group-active:scale-110
-  "
-            />
+    <button
+      onClick={() => setOpen(false)}
+      aria-label="Tutup menu"
+      className="grid h-11 w-11 place-items-center rounded-xl border border-white/15 bg-white/5"
+    >
+      <X className="h-6 w-6" aria-hidden="true" />
+    </button>
+  </div>
 
-            <span>Chat via WhatsApp</span>
-          </a>
-        </nav>
-      </aside>
+  <nav
+    className="mt-2 flex flex-col gap-2 px-5"
+    aria-label="Mobile Primary"
+  >
+    {NAV.map(({ href, label, icon: Icon }) => (
+      <Link
+        key={href}
+        href={href}
+        onClick={() => setOpen(false)}
+        className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-semibold transition
+        ${
+          isActive(href)
+            ? "bg-white text-black"
+            : "text-white/90 hover:bg-white/10"
+        }`}
+      >
+        <Icon
+          className="h-[18px] w-[18px]"
+          aria-hidden="true"
+        />
+        {label}
+      </Link>
+    ))}
+
+    <a
+      href="https://wa.me/6282134027993"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Chat via WhatsApp"
+      onClick={() => setOpen(false)}
+      className="
+        group
+        mt-5
+        inline-flex
+        w-full
+        items-center
+        justify-center
+        gap-2.5
+        rounded-full
+        border border-white/20
+        bg-gradient-to-r
+        from-zinc-200
+        via-zinc-100
+        to-zinc-300
+        px-5
+        py-3.5
+        text-[15px]
+        font-semibold
+        text-black
+        backdrop-blur
+        shadow-[0_10px_28px_rgba(255,255,255,0.15)]
+        transition-all
+        duration-200
+        active:scale-[0.96]
+        active:shadow-[0_4px_12px_rgba(255,255,255,0.1)]
+        focus:outline-none
+        focus-visible:ring-2
+        focus-visible:ring-white/40
+      "
+    >
+      <MessageCircle
+        className="
+          h-[18px]
+          w-[18px]
+          transition-transform
+          duration-200
+          group-active:scale-110
+        "
+        aria-hidden="true"
+      />
+
+      <span>Chat via WhatsApp</span>
+    </a>
+  </nav>
+</div>
     </header>
   );
 }
