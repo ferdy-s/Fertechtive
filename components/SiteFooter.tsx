@@ -96,7 +96,7 @@ export default function FooterMonochromeCompact() {
               Tentang
             </h3>
             <p className="mt-3 max-w-[48ch] text-sm leading-relaxed text-white/65">
-              {siteName}Menggabungkan teknologi dan desain untuk membangun solusi digital yang efektif dan berdampak, dengan fokus pada performa, aksesibilitas, dan maintainability.
+              {siteName} Menggabungkan teknologi dan desain untuk membangun solusi digital yang efektif dan berdampak, dengan fokus pada performa, aksesibilitas, dan maintainability.
             </p>
           </div>
 
