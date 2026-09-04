@@ -115,7 +115,7 @@ export default function PortfolioClient({
 </span>
             </h1>
        <p className="mt-4 text-[16px] leading-7 text-neutral-300 max-w-2xl">
-  Kumpulan karya profesional dalam Web Development, UI/UX Design,
+  Kumpulan karya profesional dalam Programming, UI/UX Design,
   Graphic Design, dan Digital Marketing, dengan fokus pada performa,
   user experience, dan optimalisasi SEO untuk menghasilkan solusi
   digital yang efektif dan berdampak.

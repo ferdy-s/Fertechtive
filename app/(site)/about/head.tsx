@@ -4,10 +4,10 @@ const SITE_URL =
 
 export default function Head() {
   const title =
-    "Tentang Ferdy Salsabilla | Web Developer & UI/UX Designer – Fertechtive";
+    "Tentang Ferdy Salsabilla | Full Stack Developer – Fertechtive";
 
   const description =
-    "Profil lengkap Ferdy Salsabilla, Web Developer dan UI/UX Designer dengan pengalaman 3+ tahun dalam membangun website modern dan scalable.";
+    "Ferdy Salsabilla adalah Full Stack Developer dengan 3+ tahun pengalaman dalam pengembangan web, mobile, REST API, database, dan aplikasi berbasis AI.";
 
   const url = `${SITE_URL}/about`;
   const image = `${SITE_URL}/cover_fertechtive.png`;

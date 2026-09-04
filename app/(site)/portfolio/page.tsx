@@ -18,7 +18,7 @@ const SITE_URL =
 const title = "Portfolio";
 
 const description =
-  "Kumpulan proyek Web Development, UI/UX Design, dan Digital Creative karya Ferdy Salsabilla. Dibangun dengan fokus pada performa, skalabilitas, aksesibilitas, dan pengalaman pengguna modern.";
+  "Kumpulan proyek Full Stack Developer, UI/UX Design, dan Digital Creative karya Ferdy Salsabilla. Dibangun dengan fokus pada performa, skalabilitas, aksesibilitas, dan pengalaman pengguna modern.";
 
 export async function generateMetadata({
   searchParams,
@@ -54,7 +54,7 @@ export async function generateMetadata({
           url: `${SITE_URL}/portfolio.png`,
           width: 1200,
           height: 630,
-          alt: "Portfolio Web Development & UI/UX – Fertechtive",
+          alt: "Portfolio Full Stack Developer – Fertechtive",
         },
       ],
     },

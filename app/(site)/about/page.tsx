@@ -8,7 +8,7 @@ const SITE_URL =
 const title = "Tentang";
 
 const description =
-  "Profil lengkap Ferdy Salsabilla, Web Developer dan UI/UX Designer dengan pengalaman lebih dari 3 tahun dalam membangun website modern, scalable, berorientasi performa, aksesibilitas, serta pengalaman pengguna.";
+  "Ferdy Salsabilla adalah Full Stack Developer dengan 3+ tahun pengalaman dalam pengembangan web, mobile, REST API, database, dan aplikasi berbasis AI.";
 
 const url = `${SITE_URL}/about`;
 const image = `${SITE_URL}/cover_fertechtive.png`;
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
         url: image,
         width: 1200,
         height: 630,
-        alt: "Tentang Ferdy Salsabilla – Web Developer & UI/UX Designer",
+        alt: "Tentang Ferdy Salsabilla – Full Stack Developer",
       },
     ],
   },

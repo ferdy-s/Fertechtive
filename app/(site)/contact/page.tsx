@@ -8,7 +8,7 @@ const SITE_URL =
 const title = "Kontak";
 
 const description =
-  "Hubungi Ferdy Salsabilla untuk kolaborasi Web Development, UI/UX Design, dan pengembangan produk digital modern. Konsultasi proyek, kerja sama, atau diskusi teknologi.";
+  "Hubungi Ferdy Salsabilla, Full Stack Developer untuk membangun solusi web, mobile, dan AI yang andal dan scalable melalui proyek, kolaborasi, atau pengembangan produk digital sesuai kebutuhan.";
 
 const url = `${SITE_URL}/contact`;
 const image = `${SITE_URL}/hubungi.png`;
@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   description,
 
   keywords: [
-    "Kontak Web Developer",
-    "Hire Web Developer Indonesia",
+    "Kontak Full Stack Developer",
+    "Hire Full Stack Developer Indonesia",
     "Jasa UI UX Designer",
     "Hubungi Ferdy Salsabilla",
     "Kolaborasi Digital Project",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
         url: image,
         width: 1200,
         height: 630,
-        alt: "Kontak Ferdy Salsabilla – Web Developer & UI/UX Designer",
+        alt: "Kontak Ferdy Salsabilla – Full Stack Developer",
       },
     ],
   },
@@ -90,13 +90,13 @@ export default function Page() {
       contentUrl: image,
       width: 1200,
       height: 630,
-      caption: "Kontak Ferdy Salsabilla – Web Developer & UI/UX Designer",
+      caption: "Kontak Ferdy Salsabilla – Full Stack Developer",
     },
     mainEntity: {
       "@type": "Person",
       "@id": `${SITE_URL}#person`,
       name: "Ferdy Salsabilla",
-      jobTitle: "Web Developer & UI/UX Designer",
+      jobTitle: "Full Stack Developer",
       url: SITE_URL,
       image: {
         "@type": "ImageObject",

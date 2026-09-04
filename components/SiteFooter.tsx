@@ -59,7 +59,7 @@ export default function FooterMonochromeCompact() {
                 <span className="text-white">{siteName}</span>
               </h2>
               <p className="mt-1.5 max-w-xl text-[13.5px] text-white/60">
-                Web Development • UI/UX • Graphic Design • Digital Marketing
+                Full Stack Developer • UI/UX • Graphic Design • Digital Marketing
               </p>
             </div>
 
@@ -96,9 +96,7 @@ export default function FooterMonochromeCompact() {
               Tentang
             </h3>
             <p className="mt-3 max-w-[48ch] text-sm leading-relaxed text-white/65">
-              {siteName} Memadukan UI/UX, Web Dev, Graphic Design & Digital
-              Marketing untuk hasil nyata dan fokus pada kecepatan,
-              aksesibilitas, dan maintainability.
+              {siteName}Menggabungkan teknologi dan desain untuk membangun solusi digital yang efektif dan berdampak, dengan fokus pada performa, aksesibilitas, dan maintainability.
             </p>
           </div>
 

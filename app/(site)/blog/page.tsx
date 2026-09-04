@@ -54,10 +54,10 @@ export const metadata: Metadata = {
   title: "Tips & Trik",
 
   description:
-    "Kumpulan tips dan trik seputar Web Development, UI/UX Design, software engineering, serta produktivitas kreator digital yang dirancang untuk meningkatkan kualitas produk dan performa aplikasi modern.",
+    "Kumpulan tips dan trik seputar Full stack developer, UI/UX Design, software engineering, serta produktivitas kreator digital yang dirancang untuk meningkatkan kualitas produk dan performa aplikasi modern.",
 
   keywords: [
-    "Tips Web Development",
+    "Tips Full Stack Developer",
     "UI UX Tips",
     "Software Engineering",
     "Frontend Development",
@@ -76,13 +76,13 @@ export const metadata: Metadata = {
     siteName: "Fertechtive",
     title: "Berbagi Tips & Trik Digitalisasi Modern",
     description:
-      "Insight dan editorial seputar Web Development, UI/UX, dan engineering modern untuk developer dan kreator digital.",
+      "Insight dan editorial seputar Full Stack Developer, UI/UX, dan engineering modern untuk developer dan kreator digital.",
     images: [
       {
         url: `${SITE_URL}/tips-trik.png`,
         width: 1200,
         height: 630,
-        alt: "Tips & Trik - Web Development dan UI/UX Insight",
+        alt: "Tips & Trik - Full Stack Developer dan UI/UX Insight",
       },
     ],
   },
@@ -91,7 +91,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Berbagi Tips & Trik Digitalisasi Modern",
     description:
-      "Insight dan strategi Web Development serta UI/UX untuk membangun produk digital modern.",
+      "Insight dan strategi Full Stack Developer serta UI/UX untuk membangun produk digital modern.",
     images: [`${SITE_URL}/tips-trik.png`],
   },
 
