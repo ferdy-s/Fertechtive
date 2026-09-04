@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+
 import { prisma } from "@/lib/prisma";
+
 import {
   CATEGORY_LIST,
   CategoryValue,
@@ -28,9 +30,14 @@ export async function generateMetadata({
   const baseUrl = `${SITE_URL}/portfolio`;
 
   const category =
-    typeof searchParams?.category === "string" ? searchParams.category : "all";
+    typeof searchParams?.category === "string"
+      ? searchParams.category
+      : "all";
 
-  const page = typeof searchParams?.page === "string" ? searchParams.page : "1";
+  const page =
+    typeof searchParams?.page === "string"
+      ? searchParams.page
+      : "1";
 
   const canonical =
     category === "all" && page === "1"
@@ -41,7 +48,11 @@ export async function generateMetadata({
     metadataBase: new URL(SITE_URL),
     title,
     description,
-    alternates: { canonical },
+
+    alternates: {
+      canonical,
+    },
+
     openGraph: {
       type: "website",
       locale: "id_ID",
@@ -49,6 +60,7 @@ export async function generateMetadata({
       siteName: "Fertechtive",
       title,
       description,
+
       images: [
         {
           url: `${SITE_URL}/portfolio.png`,
@@ -58,12 +70,14 @@ export async function generateMetadata({
         },
       ],
     },
+
     twitter: {
       card: "summary_large_image",
       title,
       description,
       images: [`${SITE_URL}/portfolio.png`],
     },
+
     robots: {
       index: true,
       follow: true,
@@ -88,27 +102,76 @@ export default async function Page({
 }: {
   searchParams?: Record<string, string | string[] | undefined>;
 }) {
+  // ============================================
+  // PERFORMANCE MONITORING
+  // ============================================
+
+  const pageStart = performance.now();
+
+  // ============================================
+  // CATEGORY
+  // ============================================
+
   const rawCat = searchParams?.category;
-  const active = (Array.isArray(rawCat) ? rawCat[0] : rawCat)?.toLowerCase() as
-    | CategoryOrAll
-    | undefined;
+
+  const active = (
+    Array.isArray(rawCat) ? rawCat[0] : rawCat
+  )?.toLowerCase() as CategoryOrAll | undefined;
 
   const selected: CategoryOrAll =
-    CATEGORY_LIST.find((c) => c.value === (active ?? "all"))?.value ?? "all";
+    CATEGORY_LIST.find(
+      (c) => c.value === (active ?? "all")
+    )?.value ?? "all";
+
+  // ============================================
+  // PAGINATION
+  // ============================================
 
   const PAGE_SIZE = 6;
 
   const rawPage = searchParams?.page;
-  const pageParam = Array.isArray(rawPage) ? rawPage[0] : rawPage;
-  const pageFromQuery = Number.parseInt(pageParam || "1", 10);
+
+  const pageParam =
+    Array.isArray(rawPage) ? rawPage[0] : rawPage;
+
+  const pageFromQuery = Number.parseInt(
+    pageParam || "1",
+    10
+  );
+
   const pageSafe =
-    Number.isFinite(pageFromQuery) && pageFromQuery > 0 ? pageFromQuery : 1;
+    Number.isFinite(pageFromQuery) && pageFromQuery > 0
+      ? pageFromQuery
+      : 1;
+
+  // ============================================
+  // DATABASE QUERY
+  // ============================================
+
+  const dbStart = performance.now();
 
   const allRaw =
     (await prisma.project.findMany({
-      where: { published: true },
-      orderBy: { createdAt: "desc" },
+      where: {
+        published: true,
+      },
+
+      orderBy: {
+        createdAt: "desc",
+      },
     })) || [];
+
+  const dbDuration = performance.now() - dbStart;
+
+  console.log(
+    `[Portfolio Performance] DB query: ${dbDuration.toFixed(2)}ms`
+  );
+
+  // ============================================
+  // DATA PROCESSING
+  // ============================================
+
+  const processingStart = performance.now();
 
   const enriched: ProjectLike[] = allRaw.map((p) => ({
     ...p,
@@ -118,7 +181,9 @@ export default async function Page({
   const filtered =
     selected === "all"
       ? enriched
-      : enriched.filter((p) => p.categoryDerived === selected);
+      : enriched.filter(
+          (p) => p.categoryDerived === selected
+        );
 
   const totals: Totals = {
     all: enriched.length,
@@ -135,11 +200,34 @@ export default async function Page({
   });
 
   const totalItems = filtered.length;
-  const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
-  const currentPage = Math.min(Math.max(1, pageSafe), totalPages);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(totalItems / PAGE_SIZE)
+  );
+
+  const currentPage = Math.min(
+    Math.max(1, pageSafe),
+    totalPages
+  );
 
   const start = (currentPage - 1) * PAGE_SIZE;
-  const items = filtered.slice(start, start + PAGE_SIZE);
+
+  const items = filtered.slice(
+    start,
+    start + PAGE_SIZE
+  );
+
+  const processingDuration =
+    performance.now() - processingStart;
+
+  console.log(
+    `[Portfolio Performance] Processing: ${processingDuration.toFixed(2)}ms`
+  );
+
+  // ============================================
+  // STRUCTURED DATA
+  // ============================================
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -147,11 +235,23 @@ export default async function Page({
     name: "Portfolio Ferdy Salsabilla",
     description,
     url: `${SITE_URL}/portfolio`,
+
     author: {
       "@type": "Person",
       name: "Ferdy Salsabilla",
     },
   };
+
+  // ============================================
+  // TOTAL SERVER PROCESSING
+  // ============================================
+
+  const totalDuration =
+    performance.now() - pageStart;
+
+  console.log(
+    `[Portfolio Performance] Total: ${totalDuration.toFixed(2)}ms`
+  );
 
   return (
     <>
