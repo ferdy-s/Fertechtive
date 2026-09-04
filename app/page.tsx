@@ -6,7 +6,7 @@ const SITE_URL =
   "https://fertechtive.vercel.app";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const title = "Fertechtive | Portfolio Digital Ferdy Salsabilla";
+  const title = "Fertechtive - Portfolio Digital Ferdy Salsabilla";
 
   const description =
     "Fertechtive adalah portfolio digital resmi Ferdy Salsabilla...";

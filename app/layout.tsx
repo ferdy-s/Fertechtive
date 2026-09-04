@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
   title: {
     default: "Fertechtive",
-    template: "%s | Fertechtive",
+    template: "%s - Fertechtive",
   },
 
   description:

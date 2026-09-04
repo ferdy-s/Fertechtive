@@ -75,7 +75,7 @@ Setiap halaman memiliki metadata dinamis yang diambil dari database atau konfigu
 
 ```tsx
 export const metadata = {
-  title: "Portfolio Ferdy Salsabilla | Fertechive",
+  title: "Portfolio Ferdy Salsabilla - Fertechive",
   description: "Karya, desain UI UX, dan proyek teknologi oleh Ferdy Salsabilla.",
   keywords: ["Ferdy Salsabilla", "Next.js", "UI UX Design", "Full Stack Developer", "Digital Marketing"],
   openGraph: {

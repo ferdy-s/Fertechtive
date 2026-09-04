@@ -4,7 +4,7 @@ const SITE_URL =
 
 export default function Head() {
   const title =
-    "Tentang Ferdy Salsabilla | Full Stack Developer – Fertechtive";
+    "Tentang Ferdy Salsabilla - Full Stack Developer";
 
   const description =
     "Ferdy Salsabilla adalah Full Stack Developer dengan 3+ tahun pengalaman dalam pengembangan web, mobile, REST API, database, dan aplikasi berbasis AI.";
