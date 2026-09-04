@@ -83,7 +83,7 @@ export default function Page() {
             >
               <strong>Fertechtive</strong> adalah identitas personal dari{" "}
 <strong>Ferdy Salsabilla</strong>, seorang{" "}
-<strong>Programmer</strong> dan <strong>UI/UX Designer</strong>{" "}
+<strong>Programmer</strong>{" "}
 dengan pengalaman lebih dari tiga tahun. <br />
 <br />
 Platform ini menjadi ruang untuk mendokumentasikan karya dan
