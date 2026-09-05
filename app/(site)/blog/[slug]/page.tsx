@@ -321,7 +321,7 @@ export default async function BlogDetailPage({
               "@type": "ListItem",
               position: 2,
               name: firstCategory.name,
-              item: `${origin}/blog/cat/${firstCategory.slug}`,
+             item: `${origin}/blog?cat=${encodeURIComponent(firstCategory.slug)}`,
             },
           ]
         : []),
@@ -366,10 +366,10 @@ export default async function BlogDetailPage({
           <span aria-hidden>/</span>
           {firstCategory ? (
             <>
-              <Link
-                href={`/blog/cat/${firstCategory.slug}`}
-                className="hover:text-cyan-400 transition"
-              >
+             <Link
+  href={`/blog/cat/${firstCategory.slug}`}
+  className="hover:text-cyan-400 transition"
+>
                 {firstCategory.name}
               </Link>
               <span aria-hidden>/</span>
@@ -450,11 +450,11 @@ export default async function BlogDetailPage({
           {post.categories?.length ? (
             <div className="mb-4 flex flex-wrap gap-2">
               {post.categories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/blog/cat/${cat.slug}`}
-                  className="px-3 py-1 rounded-full border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] text-xs sm:text-sm text-white/80 transition"
-                >
+               <Link
+  key={cat.id}
+  href={`/blog?cat=${encodeURIComponent(cat.slug)}`}
+  className="px-3 py-1 rounded-full border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] text-xs sm:text-sm text-white/80 transition"
+>
                   #{cat.name}
                 </Link>
               ))}
