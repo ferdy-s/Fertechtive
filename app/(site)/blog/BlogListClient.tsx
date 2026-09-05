@@ -88,7 +88,7 @@ export default function BlogListClient({
               onBlur={() => {
                 updateQuery("q", search);
               }}
-              placeholder="Cari topik tips & trik ..."
+              placeholder="Cari topik catatan ..."
               className="w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 sm:px-5 pl-12 sm:pl-14 py-3 text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
             />
 

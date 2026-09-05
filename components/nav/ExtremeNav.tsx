@@ -19,7 +19,7 @@ const NAV: NavItem[] = [
   { href: "/", label: "Beranda", icon: Home },
   { href: "/about", label: "Tentang", icon: UserRound },
   { href: "/portfolio", label: "Portfolio", icon: Briefcase },
-  { href: "/blog", label: "Tips & Trik", icon: Newspaper },
+  { href: "/blog", label: "Catatan", icon: Newspaper },
   { href: "/contact", label: "Kontak", icon: Phone },
 ];
 

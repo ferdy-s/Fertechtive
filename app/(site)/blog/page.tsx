@@ -51,10 +51,10 @@ const SITE_URL =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
 
-  title: "Tips & Trik",
+  title: "Catatan",
 
   description:
-    "Kumpulan tips dan trik seputar Full stack developer, UI/UX Design, software engineering, serta produktivitas kreator digital yang dirancang untuk meningkatkan kualitas produk dan performa aplikasi modern.",
+    "Kumpulan catatan seputar Full stack developer, UI/UX Design, software engineering, serta produktivitas kreator digital yang dirancang untuk meningkatkan kualitas produk dan performa aplikasi modern.",
 
   keywords: [
     "Tips Full Stack Developer",
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     locale: "id_ID",
     url: `${SITE_URL}/blog`,
     siteName: "Fertechtive",
-    title: "Berbagi Tips & Trik Digitalisasi Modern",
+    title: "Berbagi catatan Digitalisasi Modern",
     description:
       "Insight dan editorial seputar Full Stack Developer, UI/UX, dan engineering modern untuk developer dan kreator digital.",
     images: [
@@ -82,14 +82,14 @@ export const metadata: Metadata = {
         url: `${SITE_URL}/tips-trik.png`,
         width: 1200,
         height: 630,
-        alt: "Tips & Trik - Full Stack Developer dan UI/UX Insight",
+        alt: "Catatan - Full Stack Developer dan UI/UX Insight",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "Berbagi Tips & Trik Digitalisasi Modern",
+    title: "Berbagi Catatan Digitalisasi Modern",
     description:
       "Insight dan strategi Full Stack Developer serta UI/UX untuk membangun produk digital modern.",
     images: [`${SITE_URL}/tips-trik.png`],
@@ -201,13 +201,13 @@ export default async function Page({
 
       <section className="mx-auto max-w-[1520px] px-5 sm:px-6 md:px-10 lg:px-16 pt-36 md:pt-40 pb-10">
         <header className="mb-8 md:mb-10">
-          <h1 className="text-[40px] sm:text-[48px] md:text-[64px] xl:text-[76px] font-black tracking-tight leading-[1.04]">
-            TIPS &amp; TRIK
-          </h1>
-          <p className="mt-2 text-white/70 max-w-2xl text-base md:text-lg">
-            Editorial futuristik tentang UI/UX, engineering, dan produktivitas
-            kreator.
-          </p>
+         <h1 className="text-[40px] sm:text-[48px] md:text-[64px] xl:text-[76px] font-black tracking-tight leading-[1.04]">
+  CATATAN
+</h1>
+
+<p className="mt-2 text-white/70 max-w-2xl text-base md:text-lg">
+  Perjalanan, pengetahuan, dan karya yang lahir dari rasa ingin tahu.
+</p>
         </header>
         {/* HERO server-rendered (tanpa hidrasi) */}
         {featured && (
@@ -411,7 +411,7 @@ export default async function Page({
               "@context": "https://schema.org",
               "@type": "Blog",
               inLanguage: "id-ID",
-              name: "Tips & Trik",
+              name: "Catatan",
               url: `${SITE_URL}/blog`,
               blogPost: typedPosts.slice(0, 16).map((p, i) => ({
                 "@type": "BlogPosting",

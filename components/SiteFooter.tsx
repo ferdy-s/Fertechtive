@@ -9,7 +9,7 @@ const NAV = [
   { href: "/", label: "Beranda" },
   { href: "/about", label: "Tentang" },
   { href: "/portfolio", label: "Portfolio" },
-  { href: "/blog", label: "Tips & Trik" },
+  { href: "/blog", label: "Catatan" },
   { href: "/contact", label: "Kontak" },
 ];
 
