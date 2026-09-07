@@ -3,7 +3,8 @@
 import { useEffect, useId, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-/* ===== Types (SESUAI PRISMA) ===== */
+/* ================= Types ================= */
+
 type Cat = {
   id: string;
   name: string;
@@ -20,16 +21,40 @@ export default function BlogListClient({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
   const [isPending, startTransition] = useTransition();
+
   const inputId = useId();
 
-  const activeCat = searchParams.get("cat") ?? "all";
+  /* ================= URL STATE ================= */
+
+  const activeCat = (
+    searchParams.get("cat")?.trim().toLowerCase() || "all"
+  );
+
   const queryFromUrl = searchParams.get("q") ?? "";
 
-  /* ===== Controlled Search State ===== */
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  /* ================= SEARCH STATE ================= */
+
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const [search, setSearch] = useState(queryFromUrl);
 
+  /*
+   * Keep search input synchronized with the current URL.
+   *
+   * Important for:
+   * - browser back/forward
+   * - router navigation
+   * - external navigation to /blog?q=...
+   */
+  useEffect(() => {
+    setSearch(queryFromUrl);
+  }, [queryFromUrl]);
+
+  /*
+   * Cleanup any pending timer when component unmounts.
+   */
   useEffect(() => {
     return () => {
       if (debounceRef.current) {
@@ -37,22 +62,33 @@ export default function BlogListClient({
       }
     };
   }, []);
-  /* ===== Update Query Params ===== */
+
+  /* ================= QUERY UPDATE ================= */
+
   const updateQuery = (key: "q" | "cat", value?: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (!value || value === "all") {
+    const normalizedValue = value?.trim() ?? "";
+
+    if (!normalizedValue || normalizedValue === "all") {
       params.delete(key);
     } else {
-      params.set(key, value);
+      params.set(key, normalizedValue);
     }
 
-    params.delete("page"); // reset pagination
+    /*
+     * Any new search/category filter starts from page 1.
+     */
+    params.delete("page");
+
+    const queryString = params.toString();
 
     startTransition(() => {
       router.replace(
-        `${pathname}${params.toString() ? `?${params.toString()}` : ""}`,
-        { scroll: false },
+        `${pathname}${queryString ? `?${queryString}` : ""}`,
+        {
+          scroll: false,
+        },
       );
     });
   };
@@ -60,6 +96,7 @@ export default function BlogListClient({
   return (
     <>
       {/* ================= SEARCH ================= */}
+
       <section
         className="sticky top-[84px] z-30 mb-4 rounded-2xl border border-white/10 bg-[#0C121B]/80 backdrop-blur-xl shadow-[0_10px_36px_rgba(0,0,0,0.35)]"
         role="search"
@@ -76,6 +113,7 @@ export default function BlogListClient({
           <div className="relative">
             <input
               id={inputId}
+              type="search"
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -89,7 +127,9 @@ export default function BlogListClient({
                 updateQuery("q", search);
               }}
               placeholder="Cari topik catatan ..."
+              autoComplete="off"
               className="w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 sm:px-5 pl-12 sm:pl-14 py-3 text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
+              aria-label="Cari artikel"
             />
 
             <svg
@@ -98,7 +138,7 @@ export default function BlogListClient({
               fill="none"
               stroke="currentColor"
               strokeWidth={1.8}
-              aria-hidden
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -108,21 +148,26 @@ export default function BlogListClient({
             </svg>
           </div>
 
-          <p className="mt-5 text-xs text-white/60">
+          <p
+            className="mt-5 text-xs text-white/60"
+            aria-live="polite"
+          >
             {isPending ? "Memuat…" : `${total} artikel ditemukan`}
           </p>
         </div>
       </section>
 
       {/* ================= CATEGORY FILTER ================= */}
+
       {categories.length > 0 && (
         <nav
           className="sticky top-[152px] z-20 mb-10 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl"
-          aria-label="Filter kategori"
+          aria-label="Filter kategori artikel"
         >
           <div className="overflow-x-auto px-3 py-3 sm:px-4">
             <ul className="flex min-w-max gap-2 sm:gap-3">
               {/* ALL */}
+
               <li>
                 <Chip
                   label="Semua"
@@ -131,13 +176,16 @@ export default function BlogListClient({
                 />
               </li>
 
-              {/* DYNAMIC CATEGORIES FROM DB */}
-              {categories.map((c) => (
-                <li key={c.id}>
+              {/* DYNAMIC CATEGORIES */}
+
+              {categories.map((category) => (
+                <li key={category.id}>
                   <Chip
-                    label={c.name}
-                    active={activeCat === c.slug}
-                    onClick={() => updateQuery("cat", c.slug)}
+                    label={category.name}
+                    active={activeCat === category.slug.toLowerCase()}
+                    onClick={() =>
+                      updateQuery("cat", category.slug)
+                    }
                   />
                 </li>
               ))}
@@ -150,6 +198,7 @@ export default function BlogListClient({
 }
 
 /* ================= CHIP ================= */
+
 function Chip({
   label,
   active,

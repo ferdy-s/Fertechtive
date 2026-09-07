@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-
 import { prisma } from "@/lib/prisma";
 
 import {
@@ -10,6 +9,8 @@ import {
 } from "@/lib/categories";
 
 import PortfolioClient from "./PortfolioClient";
+
+/* =================== Constants =================== */
 
 export const dynamic = "force-dynamic";
 
@@ -22,30 +23,35 @@ const title = "Portfolio";
 const description =
   "Kumpulan proyek Full Stack Developer, UI/UX Design, dan Digital Creative karya Ferdy Salsabilla. Dibangun dengan fokus pada performa, skalabilitas, aksesibilitas, dan pengalaman pengguna modern.";
 
+/* =================== SEO =================== */
+
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?: Promise<
+    Record<string, string | string[] | undefined>
+  >;
 }): Promise<Metadata> {
-  const baseUrl = `${SITE_URL}/portfolio`;
+  const params = await searchParams;
 
-  const category =
-    typeof searchParams?.category === "string"
-      ? searchParams.category
-      : "all";
+  const hasCategory =
+    typeof params?.category === "string" &&
+    params.category.trim() !== "" &&
+    params.category.toLowerCase() !== "all";
 
-  const page =
-    typeof searchParams?.page === "string"
-      ? searchParams.page
-      : "1";
+  const hasPage =
+    typeof params?.page === "string" &&
+    params.page !== "" &&
+    params.page !== "1";
 
-  const canonical =
-    category === "all" && page === "1"
-      ? baseUrl
-      : `${baseUrl}?category=${category}&page=${page}`;
+  const isFilteredOrPaginated =
+    hasCategory || hasPage;
+
+  const canonical = `${SITE_URL}/portfolio`;
 
   return {
     metadataBase: new URL(SITE_URL),
+
     title,
     description,
 
@@ -79,11 +85,21 @@ export async function generateMetadata({
     },
 
     robots: {
-      index: true,
+      index: !isFilteredOrPaginated,
       follow: true,
+
+      googleBot: {
+        index: !isFilteredOrPaginated,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
     },
   };
 }
+
+/* =================== Types =================== */
 
 type ProjectLike = {
   id: string;
@@ -97,22 +113,32 @@ type ProjectLike = {
 
 type Totals = Record<"all" | CategoryValue, number>;
 
+/* =================== PAGE =================== */
+
 export default async function Page({
   searchParams,
 }: {
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?: Promise<
+    Record<string, string | string[] | undefined>
+  >;
 }) {
-  // ============================================
-  // PERFORMANCE MONITORING
-  // ============================================
+  /* ============================================
+     PERFORMANCE MONITORING
+  ============================================ */
 
   const pageStart = performance.now();
 
-  // ============================================
-  // CATEGORY
-  // ============================================
+  /* ============================================
+     SEARCH PARAMS
+  ============================================ */
 
-  const rawCat = searchParams?.category;
+  const params = await searchParams;
+
+  /* ============================================
+     CATEGORY
+  ============================================ */
+
+  const rawCat = params?.category;
 
   const active = (
     Array.isArray(rawCat) ? rawCat[0] : rawCat
@@ -120,19 +146,21 @@ export default async function Page({
 
   const selected: CategoryOrAll =
     CATEGORY_LIST.find(
-      (c) => c.value === (active ?? "all")
+      (category) =>
+        category.value === (active ?? "all")
     )?.value ?? "all";
 
-  // ============================================
-  // PAGINATION
-  // ============================================
+  /* ============================================
+     PAGINATION
+  ============================================ */
 
   const PAGE_SIZE = 6;
 
-  const rawPage = searchParams?.page;
+  const rawPage = params?.page;
 
-  const pageParam =
-    Array.isArray(rawPage) ? rawPage[0] : rawPage;
+  const pageParam = Array.isArray(rawPage)
+    ? rawPage[0]
+    : rawPage;
 
   const pageFromQuery = Number.parseInt(
     pageParam || "1",
@@ -140,50 +168,64 @@ export default async function Page({
   );
 
   const pageSafe =
-    Number.isFinite(pageFromQuery) && pageFromQuery > 0
+    Number.isFinite(pageFromQuery) &&
+    pageFromQuery > 0
       ? pageFromQuery
       : 1;
 
-  // ============================================
-  // DATABASE QUERY
-  // ============================================
+  /* ============================================
+     DATABASE QUERY
+  ============================================ */
 
   const dbStart = performance.now();
 
-  const allRaw =
-    (await prisma.project.findMany({
-      where: {
-        published: true,
-      },
+  const allRaw = await prisma.project.findMany({
+    where: {
+      published: true,
+    },
 
-      orderBy: {
+    orderBy: [
+      {
         createdAt: "desc",
       },
-    })) || [];
+      {
+        id: "desc",
+      },
+    ],
+  });
 
   const dbDuration = performance.now() - dbStart;
 
   console.log(
-    `[Portfolio Performance] DB query: ${dbDuration.toFixed(2)}ms`
+    `[Portfolio Performance] DB query: ${dbDuration.toFixed(
+      2
+    )}ms`
   );
 
-  // ============================================
-  // DATA PROCESSING
-  // ============================================
+  /* ============================================
+     DATA PROCESSING
+  ============================================ */
 
   const processingStart = performance.now();
 
-  const enriched: ProjectLike[] = allRaw.map((p) => ({
-    ...p,
-    categoryDerived: deriveCategory(p),
-  }));
+  const enriched: ProjectLike[] = allRaw.map(
+    (project) => ({
+      ...project,
+      categoryDerived: deriveCategory(project),
+    })
+  );
 
   const filtered =
     selected === "all"
       ? enriched
       : enriched.filter(
-          (p) => p.categoryDerived === selected
+          (project) =>
+            project.categoryDerived === selected
         );
+
+  /* ============================================
+     CATEGORY TOTALS
+  ============================================ */
 
   const totals: Totals = {
     all: enriched.length,
@@ -193,11 +235,15 @@ export default async function Page({
     marketing: 0,
   };
 
-  enriched.forEach((p) => {
-    if (p.categoryDerived) {
-      totals[p.categoryDerived]++;
+  enriched.forEach((project) => {
+    if (project.categoryDerived) {
+      totals[project.categoryDerived]++;
     }
   });
+
+  /* ============================================
+     PAGINATION
+  ============================================ */
 
   const totalItems = filtered.length;
 
@@ -211,7 +257,8 @@ export default async function Page({
     totalPages
   );
 
-  const start = (currentPage - 1) * PAGE_SIZE;
+  const start =
+    (currentPage - 1) * PAGE_SIZE;
 
   const items = filtered.slice(
     start,
@@ -222,36 +269,57 @@ export default async function Page({
     performance.now() - processingStart;
 
   console.log(
-    `[Portfolio Performance] Processing: ${processingDuration.toFixed(2)}ms`
+    `[Portfolio Performance] Processing: ${processingDuration.toFixed(
+      2
+    )}ms`
   );
 
-  // ============================================
-  // STRUCTURED DATA
-  // ============================================
+  /* ============================================
+     STRUCTURED DATA
+  ============================================ */
 
   const structuredData = {
     "@context": "https://schema.org",
+
     "@type": "CollectionPage",
+
+    "@id": `${SITE_URL}/portfolio#collection`,
+
     name: "Portfolio Ferdy Salsabilla",
+
     description,
+
     url: `${SITE_URL}/portfolio`,
+
+    inLanguage: "id-ID",
 
     author: {
       "@type": "Person",
+
+      "@id": `${SITE_URL}#person`,
+
       name: "Ferdy Salsabilla",
+
+      url: `${SITE_URL}/about`,
     },
   };
 
-  // ============================================
-  // TOTAL SERVER PROCESSING
-  // ============================================
+  /* ============================================
+     PERFORMANCE RESULT
+  ============================================ */
 
   const totalDuration =
     performance.now() - pageStart;
 
   console.log(
-    `[Portfolio Performance] Total: ${totalDuration.toFixed(2)}ms`
+    `[Portfolio Performance] Total: ${totalDuration.toFixed(
+      2
+    )}ms`
   );
+
+  /* ============================================
+     RESPONSE
+  ============================================ */
 
   return (
     <>
@@ -266,7 +334,9 @@ export default async function Page({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData),
+          __html: JSON.stringify(
+            structuredData
+          ),
         }}
       />
     </>

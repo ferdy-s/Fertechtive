@@ -590,23 +590,26 @@ export default async function BlogDetailPage({
     : `${SITE_URL}/default-blog.jpg`;
 
   const jsonLdArticle = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: title,
-    description,
-    datePublished: isoDate,
-    author: post.author?.name
-      ? {
-          "@type": "Person",
-          name: post.author.name,
-        }
-      : undefined,
-    mainEntityOfPage: canonical,
-    image: [articleImage],
-    articleSection: firstCategory?.name,
-    inLanguage: "id-ID",
-    wordCount: wordCount(post.content),
-  };
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: title,
+  description,
+  datePublished: isoDate,
+
+  author: post.author?.name
+    ? {
+        "@type": "Person",
+        name: post.author.name,
+        url: `${SITE_URL}/about`,
+      }
+    : undefined,
+
+  mainEntityOfPage: canonical,
+  image: [articleImage],
+  articleSection: firstCategory?.name,
+  inLanguage: "id-ID",
+  wordCount: wordCount(post.content),
+};
 
   const jsonLdBreadcrumb = {
     "@context": "https://schema.org",
