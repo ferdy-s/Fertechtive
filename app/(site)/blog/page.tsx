@@ -44,7 +44,7 @@ const fmtDate = (d?: Published) => {
 
 /* ================= Caching ================= */
 
-export const revalidate = 3600; // ISR 1 jam
+export const revalidate = 3600;
 
 /* ================= SEO ================= */
 
@@ -276,146 +276,141 @@ export default async function Page({
 
   return (
     <main
-      className="relative isolate min-h-screen bg-[#05060A] text-white overflow-hidden"
+      className="relative isolate min-h-screen overflow-hidden bg-[#05060A] text-white"
       aria-label="Halaman Blog"
     >
       {/* ================= BACKGROUND ================= */}
 
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(1200px_600px_at_10%_0%,rgba(56,189,248,0.12),transparent_60%),radial-gradient(1200px_600px_at_90%_10%,rgba(139,92,246,0.12),transparent_60%)]" />
+     <div
+  aria-hidden
+  className="pointer-events-none absolute inset-0 -z-10"
+>
+  {/* Subtle ambient glow */}
+  <div className="absolute inset-0 bg-[radial-gradient(900px_500px_at_15%_0%,rgba(56,189,248,0.025),transparent_65%),radial-gradient(900px_500px_at_85%_0%,rgba(139,92,246,0.025),transparent_65%)]" />
 
-        <div
-          className="absolute inset-0 opacity-[0.055]"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, rgba(255,255,255,.26) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.26) 1px, transparent 1px)",
-            backgroundSize: "52px 52px",
-            maskImage:
-              "radial-gradient(80% 60% at 50% 8%, black 35%, transparent 70%)",
-            WebkitMaskImage:
-              "radial-gradient(80% 60% at 50% 8%, black 35%, transparent 70%)",
-          }}
-        />
-      </div>
+  {/* Very subtle grid */}
+  <div
+    className="absolute inset-0 opacity-[0.018]"
+    style={{
+      backgroundImage:
+        "linear-gradient(to right, rgba(255,255,255,.25) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.25) 1px, transparent 1px)",
+      backgroundSize: "52px 52px",
+      maskImage:
+        "radial-gradient(70% 45% at 50% 0%, black 10%, transparent 75%)",
+      WebkitMaskImage:
+        "radial-gradient(70% 45% at 50% 0%, black 10%, transparent 75%)",
+    }}
+  />
+</div>
 
-      <section className="mx-auto max-w-[1520px] px-5 sm:px-6 md:px-10 lg:px-16 pt-36 md:pt-40 pb-10">
-        {/* ================= HEADER ================= */}
-
-        <header className="mb-8 md:mb-10">
-          <h1 className="text-[40px] sm:text-[48px] md:text-[64px] xl:text-[76px] font-black tracking-tight leading-[1.04]">
-            CATATAN
-          </h1>
-
-          <p className="mt-2 text-white/70 max-w-2xl text-base md:text-lg">
-            Perjalanan, pengetahuan, dan karya yang lahir dari rasa ingin
-            tahu.
-          </p>
-        </header>
+      <section className="mx-auto max-w-[1520px] px-5 pt-36 pb-10 sm:px-6 md:px-10 md:pt-30 lg:px-16">
 
         {/* ================= FEATURED ARTICLE ================= */}
 
-        {featured && (
-          <article
-            className="group mb-10 md:mb-14 grid grid-cols-1 lg:grid-cols-[1.12fr,1fr] overflow-hidden rounded-[32px] border border-white/10 bg-[#0A0E14]/70 hover:border-cyan-400/25 transition-all"
-            aria-labelledby={`post-${featured.id}-title`}
-          >
-            <Link
-              href={`/blog/${featured.slug}`}
-              className="contents"
-              aria-label={`Baca artikel unggulan: ${
-                featured.title ?? "Tanpa judul"
-              }`}
-            >
-              <div className="relative aspect-[16/9] lg:aspect-auto lg:min-h-[480px]">
-                {coverOf(featured) ? (
-                  <Image
-                    src={coverOf(featured)!}
-                    alt={`Sampul artikel: ${
-                      featured.title ?? "Tanpa judul"
-                    }`}
-                    fill
-                    priority
-                    fetchPriority="high"
-                    sizes="(max-width:1024px) 100vw, 50vw"
-                    className="object-cover object-center"
-                  />
-                ) : (
-                  <div
-                    aria-hidden
-                    className="absolute inset-0 bg-gradient-to-br from-cyan-700/20 to-violet-800/20"
-                  />
-                )}
-
-                <div
-                  aria-hidden
-                  className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"
-                />
-
-                <span className="absolute left-4 top-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] border border-white/15 bg-black/50 backdrop-blur">
-                  {featured.categories?.[0]?.name ?? "Umum"}
-                </span>
-              </div>
-
-              <div className="p-6 sm:p-8 md:p-10 xl:p-14 flex flex-col justify-center">
-                <h2
-                  id={`post-${featured.id}-title`}
-                  className="text-[24px] sm:text-[28px] md:text-[38px] xl:text-[42px] font-semibold leading-tight"
-                >
-                  {featured.title}
-                </h2>
-
-                <p className="mt-3 sm:mt-4 text-white/70 text-sm sm:text-base md:text-lg line-clamp-5">
-                  {featured.excerpt}
-                </p>
-
-                <div className="mt-5 flex items-center gap-2 text-[12px] sm:text-sm text-white/60">
-                  <span>{featured.author?.name ?? "Anon"}</span>
-
-                  <span aria-hidden>•</span>
-
-                  <time dateTime={toISO(featured.publishedAt)}>
-                    {fmtDate(featured.publishedAt)}
-                  </time>
-                </div>
-              </div>
-            </Link>
-          </article>
+       {featured && (
+  <article
+    className="group mb-6 grid grid-cols-1 overflow-hidden rounded-[32px] border border-white/10 bg-[#0A0E14]/70 transition-all hover:border-white/20 lg:grid-cols-[1.08fr_1fr]"
+    aria-labelledby={`post-${featured.id}-title`}
+  >
+    <Link
+      href={`/blog/${featured.slug}`}
+      className="contents"
+      aria-label={`Baca artikel unggulan: ${
+        featured.title ?? "Tanpa judul"
+      }`}
+    >
+      {/* THUMBNAIL */}
+      <div className="relative overflow-hidden">
+        {coverOf(featured) ? (
+          <Image
+            src={coverOf(featured)!}
+            alt={`Sampul artikel: ${
+              featured.title ?? "Tanpa judul"
+            }`}
+            width={1600}
+            height={900}
+            priority
+            fetchPriority="high"
+            sizes="(max-width:1024px) 100vw, 55vw"
+            className="block h-auto w-full object-contain transition-transform duration-700 group-hover:scale-[1.01]"
+          />
+        ) : (
+          <div className="aspect-video w-full bg-gradient-to-br from-cyan-700/20 to-violet-800/20" />
         )}
 
-        {/* ================= SEARCH / CATEGORY ================= */}
-
-        <BlogListClient
-          categories={
-            categories as Pick<Category, "id" | "name" | "slug">[]
-          }
-          total={totalCount}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/55 via-black/10 to-transparent"
         />
+
+        <span className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/50 px-3.5 py-1.5 text-[11px] backdrop-blur">
+          {featured.categories?.[0]?.name ?? "Umum"}
+        </span>
+      </div>
+
+      {/* TEXT */}
+      <div className="flex flex-col justify-center p-6 sm:p-8 md:p-10 xl:p-12">
+        <h2
+          id={`post-${featured.id}-title`}
+          className="text-[24px] font-semibold leading-[1.12] sm:text-[28px] md:text-[34px] xl:text-[40px]"
+        >
+          {featured.title}
+        </h2>
+
+        <p className="mt-3 line-clamp-5 text-sm leading-relaxed text-white/70 sm:mt-4 sm:text-base md:text-lg">
+          {featured.excerpt}
+        </p>
+
+        <div className="mt-5 flex items-center gap-2 text-[12px] text-white/60 sm:text-sm">
+          <span>{featured.author?.name ?? "Anon"}</span>
+
+          <span aria-hidden>•</span>
+
+          <time dateTime={toISO(featured.publishedAt)}>
+            {fmtDate(featured.publishedAt)}
+          </time>
+        </div>
+      </div>
+    </Link>
+  </article>
+)}
+
+        {/* ================= SEARCH + CATEGORY ================= */}
+
+       <BlogListClient
+  categories={
+    categories as Pick<
+      Category,
+      "id" | "name" | "slug"
+    >[]
+  }
+  total={totalCount}
+/>
 
         {/* ================= ARTICLE LIST ================= */}
 
         <section id="blog-list" aria-label="Daftar artikel">
           {rest.length > 0 ? (
             <ul
-              className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8"
+              className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
               role="list"
             >
               {rest.map((p) => (
-                <li key={p.id}>
+                <li key={p.id} className="list-none">
                   <article
-                    className="group relative overflow-hidden rounded-2xl border border-white/12 bg-[#0B1119]/75 hover:bg-[#0E1521]/85 hover:border-cyan-400/25 transition-all"
+                    className="group relative overflow-hidden rounded-2xl bg-[#0B1119]/75 transition-all hover:bg-[#0E1521]/85"
                     aria-labelledby={`post-${p.id}-title`}
                   >
                     <Link
                       href={`/blog/${p.slug}`}
-                      className="block focus:outline-none focus:ring-2 focus:ring-cyan-400/60 rounded-2xl"
+                      className="block rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-400/60"
                       aria-label={`Baca artikel: ${
                         p.title ?? "Tanpa judul"
                       }`}
                     >
-                      <div className="relative aspect-[16/10]">
+                      {/* THUMBNAIL */}
+
+                      <div className="relative aspect-video overflow-hidden bg-[#0B1119]">
                         {coverOf(p) ? (
                           <Image
                             src={coverOf(p)!}
@@ -425,7 +420,7 @@ export default async function Page({
                             fill
                             loading="lazy"
                             sizes="(max-width:768px) 100vw, 25vw"
-                            className="object-cover"
+                            className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
                           />
                         ) : (
                           <div
@@ -434,20 +429,24 @@ export default async function Page({
                           />
                         )}
 
-                        <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/55 px-2.5 py-1 text-[11px] text-cyan-300 backdrop-blur">
+                        {/* CATEGORY */}
+
+                        <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/55 px-2.5 py-1 text-[11px] text-white/90 backdrop-blur">
                           {p.categories?.[0]?.name ?? "Umum"}
                         </span>
                       </div>
 
-                      <div className="p-5">
+                      {/* CONTENT */}
+
+                      <div className="p-4">
                         <h3
                           id={`post-${p.id}-title`}
-                          className="text-[16px] sm:text-[18px] font-semibold leading-snug line-clamp-2"
+                          className="line-clamp-2 text-[16px] font-semibold leading-snug sm:text-[18px]"
                         >
                           {p.title}
                         </h3>
 
-                        <p className="mt-2 text-[13px] sm:text-[14px] text-white/70 line-clamp-2">
+                        <p className="mt-2 line-clamp-2 text-[13px] text-white/70 sm:text-[14px]">
                           {p.excerpt}
                         </p>
 
@@ -468,7 +467,7 @@ export default async function Page({
             </ul>
           ) : (
             <p
-              className="text-center text-white/60 py-20"
+              className="py-20 text-center text-white/60"
               role="status"
               aria-live="polite"
             >
@@ -481,17 +480,17 @@ export default async function Page({
 
         {totalPages > 1 && (
           <nav
-            className="mt-15 flex justify-center"
+            className="mt-12 flex justify-center"
             aria-label="Pagination"
           >
-            <div className="flex items-center gap-6 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl px-6 py-3">
-              {/* Previous */}
+            <div className="flex items-center gap-6 rounded-full border border-white/10 bg-white/5 px-6 py-3 backdrop-blur-xl">
+              {/* PREVIOUS */}
 
               {currentPage > 1 ? (
                 <Link
                   href={buildUrl(currentPage - 1)}
                   rel="prev"
-                  className="text-sm font-medium transition-all duration-200 text-white/70 hover:text-cyan-300"
+                  className="text-sm font-medium text-white/70 transition-all duration-200 hover:text-white"
                 >
                   ← Previous
                 </Link>
@@ -504,11 +503,14 @@ export default async function Page({
                 </span>
               )}
 
-              {/* Divider */}
+              {/* DIVIDER */}
 
-              <div className="h-5 w-px bg-white/10" />
+              <div
+                className="h-5 w-px bg-white/10"
+                aria-hidden="true"
+              />
 
-              {/* Page Info */}
+              {/* PAGE INFO */}
 
               <div className="text-sm text-white/60">
                 Page{" "}
@@ -521,17 +523,20 @@ export default async function Page({
                 </span>
               </div>
 
-              {/* Divider */}
+              {/* DIVIDER */}
 
-              <div className="h-5 w-px bg-white/10" />
+              <div
+                className="h-5 w-px bg-white/10"
+                aria-hidden="true"
+              />
 
-              {/* Next */}
+              {/* NEXT */}
 
               {currentPage < totalPages ? (
                 <Link
                   href={buildUrl(currentPage + 1)}
                   rel="next"
-                  className="text-sm font-medium transition-all duration-200 text-white/70 hover:text-cyan-300"
+                  className="text-sm font-medium text-white/70 transition-all duration-200 hover:text-white"
                 >
                   Next →
                 </Link>

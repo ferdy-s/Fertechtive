@@ -1,7 +1,20 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, useTransition } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useTransition,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  ChevronDown,
+  LayoutGrid,
+  Search,
+} from "lucide-react";
 
 /* ================= Types ================= */
 
@@ -10,6 +23,8 @@ type Cat = {
   name: string;
   slug: string;
 };
+
+/* ================= Component ================= */
 
 export default function BlogListClient({
   categories,
@@ -26,35 +41,76 @@ export default function BlogListClient({
 
   const inputId = useId();
 
+  /*
+   * One ref for the entire filter section.
+   *
+   * This avoids the previous problem where the same
+   * category ref was attached to both desktop and mobile.
+   */
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  const [categoryOpen, setCategoryOpen] = useState(false);
+
   /* ================= URL STATE ================= */
 
-  const activeCat = (
-    searchParams.get("cat")?.trim().toLowerCase() || "all"
-  );
+  const activeCat =
+    searchParams.get("cat")?.trim().toLowerCase() || "all";
 
   const queryFromUrl = searchParams.get("q") ?? "";
 
   /* ================= SEARCH STATE ================= */
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const [search, setSearch] = useState(queryFromUrl);
 
-  /*
-   * Keep search input synchronized with the current URL.
-   *
-   * Important for:
-   * - browser back/forward
-   * - router navigation
-   * - external navigation to /blog?q=...
-   */
+  /* ================= SYNC SEARCH ================= */
+
   useEffect(() => {
     setSearch(queryFromUrl);
   }, [queryFromUrl]);
 
-  /*
-   * Cleanup any pending timer when component unmounts.
-   */
+  /* ================= CLOSE DROPDOWN ================= */
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      if (
+        sectionRef.current &&
+        !sectionRef.current.contains(target)
+      ) {
+        setCategoryOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  /* ================= ESCAPE ================= */
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setCategoryOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
+  /* ================= CLEANUP ================= */
+
   useEffect(() => {
     return () => {
       if (debounceRef.current) {
@@ -65,7 +121,10 @@ export default function BlogListClient({
 
   /* ================= QUERY UPDATE ================= */
 
-  const updateQuery = (key: "q" | "cat", value?: string) => {
+  const updateQuery = (
+    key: "q" | "cat",
+    value?: string,
+  ) => {
     const params = new URLSearchParams(searchParams.toString());
 
     const normalizedValue = value?.trim() ?? "";
@@ -77,7 +136,8 @@ export default function BlogListClient({
     }
 
     /*
-     * Any new search/category filter starts from page 1.
+     * Reset pagination whenever
+     * search or category changes.
      */
     params.delete("page");
 
@@ -93,113 +153,351 @@ export default function BlogListClient({
     });
   };
 
+  /* ================= SEARCH ================= */
+
+  const submitSearch = () => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    updateQuery("q", search);
+  };
+
+  /* ================= ACTIVE CATEGORY ================= */
+
+  const activeCategory = categories.find(
+    (category) =>
+      category.slug.toLowerCase() === activeCat,
+  );
+
   return (
-    <>
-      {/* ================= SEARCH ================= */}
+    <section
+      ref={sectionRef}
+      className="sticky top-[84px] z-30 mb-6 w-full rounded-2xl border border-white/10 bg-[#0C121B]/85 shadow-[0_10px_36px_rgba(0,0,0,0.30)] backdrop-blur-xl"
+      aria-label="Filter dan pencarian artikel"
+    >
+      {/* =========================================================
+          DESKTOP / TABLET
+          ========================================================= */}
 
-      <section
-        className="sticky top-[84px] z-30 mb-4 rounded-2xl border border-white/10 bg-[#0C121B]/80 backdrop-blur-xl shadow-[0_10px_36px_rgba(0,0,0,0.35)]"
-        role="search"
-        aria-label="Pencarian artikel"
-      >
-        <div className="p-4 sm:px-5 sm:py-5">
-          <label
-            htmlFor={inputId}
-            className="mb-5 block text-[12px] uppercase tracking-widest text-white/50"
-          >
-            Pencarian Cepat
-          </label>
+      <div className="hidden min-w-0 items-center gap-3 p-3 sm:flex">
+        {/* ================= SEARCH ================= */}
 
-          <div className="relative">
-            <input
-              id={inputId}
-              type="search"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  updateQuery("q", search);
-                }
-              }}
-              onBlur={() => {
-                updateQuery("q", search);
-              }}
-              placeholder="Cari topik catatan ..."
-              autoComplete="off"
-              className="w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 sm:px-5 pl-12 sm:pl-14 py-3 text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
-              aria-label="Cari artikel"
-            />
-
-            <svg
-              className="absolute left-4 sm:left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-cyan-300"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.8}
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 7.5 7.5a7.5 7.5 0 0 0 9.15 9.15Z"
-              />
-            </svg>
-          </div>
-
-          <p
-            className="mt-5 text-xs text-white/60"
-            aria-live="polite"
-          >
-            {isPending ? "Memuat…" : `${total} artikel ditemukan`}
-          </p>
+        <div className="min-w-0 flex-1">
+          <SearchInput
+            inputId={inputId}
+            value={search}
+            onChange={setSearch}
+            onSubmit={submitSearch}
+          />
         </div>
-      </section>
 
-      {/* ================= CATEGORY FILTER ================= */}
+        {/* ================= RESULT ================= */}
 
-      {categories.length > 0 && (
-        <nav
-          className="sticky top-[152px] z-20 mb-10 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl"
-          aria-label="Filter kategori artikel"
-        >
-          <div className="overflow-x-auto px-3 py-3 sm:px-4">
-            <ul className="flex min-w-max gap-2 sm:gap-3">
-              {/* ALL */}
+        <ResultCount
+          total={total}
+          isPending={isPending}
+        />
 
-              <li>
-                <Chip
-                  label="Semua"
-                  active={activeCat === "all"}
-                  onClick={() => updateQuery("cat", "all")}
-                />
-              </li>
+        {/* ================= FILTER ================= */}
 
-              {/* DYNAMIC CATEGORIES */}
+        <FilterControls
+          categories={categories}
+          activeCat={activeCat}
+          activeCategory={activeCategory}
+          categoryOpen={categoryOpen}
+          setCategoryOpen={setCategoryOpen}
+          updateQuery={updateQuery}
+        />
+      </div>
 
-              {categories.map((category) => (
-                <li key={category.id}>
-                  <Chip
-                    label={category.name}
-                    active={activeCat === category.slug.toLowerCase()}
-                    onClick={() =>
-                      updateQuery("cat", category.slug)
-                    }
-                  />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </nav>
-      )}
-    </>
+      {/* =========================================================
+          MOBILE
+          ========================================================= */}
+
+      <div className="sm:hidden">
+        {/* ================= SEARCH ================= */}
+
+        <div className="p-2.5 pb-2">
+          <SearchInput
+            inputId={inputId}
+            value={search}
+            onChange={setSearch}
+            onSubmit={submitSearch}
+            mobile
+          />
+        </div>
+
+        {/* ================= RESULT + FILTER ================= */}
+
+        <div className="flex items-center justify-between gap-2 border-t border-white/[0.06] px-2.5 py-2.5">
+          <ResultCount
+            total={total}
+            isPending={isPending}
+            mobile
+          />
+
+          <FilterControls
+            categories={categories}
+            activeCat={activeCat}
+            activeCategory={activeCategory}
+            categoryOpen={categoryOpen}
+            setCategoryOpen={setCategoryOpen}
+            updateQuery={updateQuery}
+            mobile
+          />
+        </div>
+      </div>
+    </section>
   );
 }
 
-/* ================= CHIP ================= */
+/* ============================================================
+   SEARCH INPUT
+   ============================================================ */
 
-function Chip({
+function SearchInput({
+  inputId,
+  value,
+  onChange,
+  onSubmit,
+  mobile = false,
+}: {
+  inputId: string;
+  value: string;
+  onChange: (value: string) => void;
+  onSubmit: () => void;
+  mobile?: boolean;
+}) {
+  return (
+    <div className="relative w-full">
+      <label
+        htmlFor={inputId}
+        className="sr-only"
+      >
+        Cari artikel
+      </label>
+
+      <Search
+        size={mobile ? 18 : 17}
+        strokeWidth={1.8}
+        aria-hidden="true"
+        className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40"
+      />
+
+      <input
+        id={inputId}
+        type="search"
+        value={value}
+        onChange={(event) => {
+          onChange(event.target.value);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            onSubmit();
+          }
+        }}
+        onBlur={onSubmit}
+        placeholder="Cari artikel..."
+        autoComplete="off"
+        className={`w-full rounded-xl border border-white/10 bg-white/[0.04] text-white outline-none transition placeholder:text-white/35 focus:border-white/20 focus:bg-white/[0.06] focus:ring-1 focus:ring-white/10 ${
+          mobile
+            ? "py-3 pl-10 pr-4 text-sm"
+            : "py-2.5 pl-10 pr-4 text-sm"
+        }`}
+        aria-label="Cari artikel"
+      />
+    </div>
+  );
+}
+
+/* ============================================================
+   RESULT COUNT
+   ============================================================ */
+
+function ResultCount({
+  total,
+  isPending,
+  mobile = false,
+}: {
+  total: number;
+  isPending: boolean;
+  mobile?: boolean;
+}) {
+  return (
+    <div
+      className="shrink-0 whitespace-nowrap text-xs text-white/45"
+      aria-live="polite"
+    >
+      {isPending ? (
+        "Memuat..."
+      ) : mobile ? (
+        `${total} artikel`
+      ) : (
+        `${total} artikel ditemukan`
+      )}
+    </div>
+  );
+}
+
+/* ============================================================
+   FILTER CONTROLS
+   ============================================================ */
+
+function FilterControls({
+  categories,
+  activeCat,
+  activeCategory,
+  categoryOpen,
+  setCategoryOpen,
+  updateQuery,
+  mobile = false,
+}: {
+  categories: Cat[];
+  activeCat: string;
+  activeCategory?: Cat;
+  categoryOpen: boolean;
+
+  /*
+   * Correct React state setter type.
+   *
+   * Supports:
+   * setCategoryOpen(true)
+   * setCategoryOpen(false)
+   * setCategoryOpen((open) => !open)
+   */
+  setCategoryOpen: Dispatch<SetStateAction<boolean>>;
+
+  updateQuery: (
+    key: "q" | "cat",
+    value?: string,
+  ) => void;
+
+  mobile?: boolean;
+}) {
+  if (categories.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="relative flex shrink-0 items-center gap-1">
+      {/* ================= SEMUA ================= */}
+
+      <button
+        type="button"
+        onClick={() => {
+          updateQuery("cat", "all");
+          setCategoryOpen(false);
+        }}
+        aria-pressed={activeCat === "all"}
+        className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl text-sm font-medium transition-colors focus:outline-none focus:ring-1 focus:ring-white/20 ${
+          mobile
+            ? "px-3 py-2.5"
+            : "px-3.5 py-2.5"
+        } ${
+          activeCat === "all"
+            ? "bg-white/10 text-white"
+            : "text-white/60 hover:bg-white/5 hover:text-white"
+        }`}
+      >
+        <LayoutGrid
+          size={mobile ? 16 : 17}
+          strokeWidth={1.8}
+          aria-hidden="true"
+        />
+
+        <span>Semua</span>
+      </button>
+
+      {/* ================= KATEGORI ================= */}
+
+      <button
+        type="button"
+        onClick={() => {
+          setCategoryOpen((open) => !open);
+        }}
+        aria-expanded={categoryOpen}
+        aria-haspopup="listbox"
+        className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl text-sm font-medium transition-colors focus:outline-none focus:ring-1 focus:ring-white/20 ${
+          mobile
+            ? "max-w-[125px] px-3 py-2.5"
+            : "max-w-[170px] px-3.5 py-2.5"
+        } ${
+          activeCat !== "all"
+            ? "bg-white/10 text-white"
+            : "text-white/60 hover:bg-white/5 hover:text-white"
+        }`}
+      >
+        <span className="truncate">
+          {activeCategory?.name ?? "Kategori"}
+        </span>
+
+        <ChevronDown
+          size={15}
+          strokeWidth={1.8}
+          className={`shrink-0 transition-transform ${
+            categoryOpen
+              ? "rotate-180"
+              : ""
+          }`}
+          aria-hidden="true"
+        />
+      </button>
+
+      {/* ================= DROPDOWN ================= */}
+
+      {categoryOpen && (
+        <div
+          role="listbox"
+          aria-label="Pilih kategori artikel"
+          className={`absolute right-0 top-[calc(100%+8px)] z-50 max-h-[320px] min-w-[190px] max-w-[280px] overflow-y-auto rounded-xl border border-white/10 bg-[#0C121B] p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl ${
+            mobile
+              ? "max-w-[230px]"
+              : ""
+          }`}
+        >
+          {/* ================= SEMUA ================= */}
+
+          <CategoryOption
+            label="Semua"
+            active={activeCat === "all"}
+            onClick={() => {
+              updateQuery("cat", "all");
+              setCategoryOpen(false);
+            }}
+          />
+
+          {/* ================= CATEGORIES ================= */}
+
+          {categories.map((category) => (
+            <CategoryOption
+              key={category.id}
+              label={category.name}
+              active={
+                activeCat ===
+                category.slug.toLowerCase()
+              }
+              onClick={() => {
+                updateQuery(
+                  "cat",
+                  category.slug,
+                );
+
+                setCategoryOpen(false);
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============================================================
+   CATEGORY OPTION
+   ============================================================ */
+
+function CategoryOption({
   label,
   active,
   onClick,
@@ -211,15 +509,18 @@ function Chip({
   return (
     <button
       type="button"
+      role="option"
+      aria-selected={active}
       onClick={onClick}
-      aria-pressed={active}
-      className={`rounded-full px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-cyan-400/60 ${
+      className={`flex w-full items-center rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
         active
-          ? "bg-gradient-to-r from-cyan-400 to-blue-400 text-black"
-          : "bg-white/[0.06] text-white/85 hover:bg-white/[0.12]"
+          ? "bg-white/10 text-white"
+          : "text-white/60 hover:bg-white/5 hover:text-white"
       }`}
     >
-      {label}
+      <span className="truncate">
+        {label}
+      </span>
     </button>
   );
 }
