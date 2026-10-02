@@ -111,10 +111,10 @@ export async function generateMetadata({
       description: BLOG_OG_DESCRIPTION,
       images: [
         {
-          url: `${SITE_URL}/tips-trik.png`,
+          url: `${SITE_URL}/catatan_ferdy_salsabilla.webp`,
           width: 1200,
           height: 630,
-          alt: "Catatan - Full Stack Developer dan UI/UX Insight",
+          alt: "Catatan - Full Stack Developer Ferdy Salsabilla",
         },
       ],
     },
@@ -124,7 +124,7 @@ export async function generateMetadata({
       title: BLOG_OG_TITLE,
       description:
         "Insight dan strategi Full Stack Developer serta UI/UX untuk membangun produk digital modern.",
-      images: [`${SITE_URL}/tips-trik.png`],
+      images: [`${SITE_URL}/catatan_ferdy_salsabilla.webp`],
     },
 
     robots: {

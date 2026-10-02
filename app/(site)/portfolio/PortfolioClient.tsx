@@ -97,7 +97,7 @@ export default function PortfolioClient({
            <div className="rounded-2xl border border-white/10 bg-white/5 p-1 mt-2">
               <div className="relative aspect-[16/8] w-full overflow-hidden rounded-xl border border-white/10">
                 <Image
-                  src="/portfolio.png"
+                  src="/portfolio_fertechtive_ferdy_salsabilla.webp"
                   alt="Showcase"
                   fill
                   className="object-cover"

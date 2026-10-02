@@ -11,7 +11,7 @@ const description =
   "Ferdy Salsabilla adalah Full Stack Developer dengan 3+ tahun pengalaman dalam pengembangan web, mobile, REST API, database, dan aplikasi berbasis AI.";
 
 const url = `${SITE_URL}/about`;
-const image = `${SITE_URL}/cover_fertechtive.png`;
+const image = `${SITE_URL}/cover_tetang_fertechtive.webp`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

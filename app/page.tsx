@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     locale: "id_ID",
     images: [
       {
-        url: `${SITE_URL}/cover_fertechtive.png`,
+        url: `${SITE_URL}/cover_tetang_fertechtive.webp`,
         width: 1200,
         height: 630,
         alt: "Fertechtive - Portfolio Digital Ferdy Salsabilla",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title,
     description,
-    images: [`${SITE_URL}/cover_fertechtive.png`],
+    images: [`${SITE_URL}/cover_tetang_fertechtive.webp`],
   },
 };
 

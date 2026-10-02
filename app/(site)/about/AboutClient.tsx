@@ -103,7 +103,7 @@ berkelanjutan.
           {/* kanan: foto */}
           <FadeIn className="md:col-span-5 order-first md:order-none">
             <Image
-              src="/cover_fertechtive.png"
+              src="/cover_tetang_fertechtive.webp"
               alt="foto Ferdy Salsabilla"
               width={640}
               height={410}

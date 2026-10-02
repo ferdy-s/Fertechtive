@@ -69,7 +69,7 @@ export async function generateMetadata({
 
       images: [
         {
-          url: `${SITE_URL}/portfolio.png`,
+          url: `${SITE_URL}/portfolio_fertechtive_ferdy_salsabilla.webp`,
           width: 1200,
           height: 630,
           alt: "Portfolio Full Stack Developer – Fertechtive",
@@ -81,7 +81,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [`${SITE_URL}/portfolio.png`],
+      images: [`${SITE_URL}/portfolio_fertechtive_ferdy_salsabilla.webp`],
     },
 
     robots: {

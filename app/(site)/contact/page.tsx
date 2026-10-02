@@ -11,7 +11,7 @@ const description =
   "Hubungi Ferdy Salsabilla, Full Stack Developer untuk membangun solusi web, mobile, dan AI yang andal dan scalable melalui proyek, kolaborasi, atau pengembangan produk digital sesuai kebutuhan.";
 
 const url = `${SITE_URL}/contact`;
-const image = `${SITE_URL}/hubungi.png`;
+const image = `${SITE_URL}/kontak_ferdy_salsabilla.webp`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
